@@ -65,5 +65,11 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "environment":{
+    "node":"22.14.0",
+    "@nestjs/cli": "10.1.17",
+    "pnpm":"9.15.5",
+    "npm":"11.1.0"
   }
 }
