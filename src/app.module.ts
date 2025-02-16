@@ -11,7 +11,7 @@ import { UsersModule } from './users/users.module';
       host: 'localhost',
       port: 5432,
       username: 'your_username',
-      password: 'your_password',
+      password: 'Mnemonic1984.',
       database: 'your_database',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,

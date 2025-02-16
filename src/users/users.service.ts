@@ -5,16 +5,16 @@ import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+    constructor(
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
+    ) { }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
-  }
+    findAll(): Promise<User[]> {
+        return this.usersRepository.find();
+    }
 
-  create(user: User): Promise<User> {
-    return this.usersRepository.save(user);
-  }
+    create(user: User): Promise<User> {
+        return this.usersRepository.save(user);
+    }
 }
