@@ -32,6 +32,12 @@
 $ pnpm install
 ```
 
+## Setting up PostgreSQL
+
+1. Install PostgreSQL from [here](https://www.postgresql.org/download/).
+2. Create a new database and user with the necessary permissions.
+3. Update the `TypeOrmModule` configuration in `src/app.module.ts` with your PostgreSQL credentials.
+
 ## Running the app
 
 ```bash
