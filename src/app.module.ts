@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { FirestoreModule } from '@nestjs/firestore';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -15,6 +16,10 @@ import { UsersModule } from './users/users.module';
       database: 'your_database',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+    }),
+    FirestoreModule.forRoot({
+      projectId: 'your_project_id',
+      keyFilename: 'path/to/your/serviceAccountKey.json',
     }),
     UsersModule,
   ],

@@ -38,6 +38,13 @@ $ pnpm install
 2. Create a new database and user with the necessary permissions.
 3. Update the `TypeOrmModule` configuration in `src/app.module.ts` with your PostgreSQL credentials.
 
+## Setting up Firestore
+
+1. Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/).
+2. Create a Firestore database in your Firebase project.
+3. Generate a service account key from the Firebase project settings and download the JSON file.
+4. Update the `FirestoreModule` configuration in `src/app.module.ts` with your Firebase project ID and the path to your service account key JSON file.
+
 ## Running the app
 
 ```bash

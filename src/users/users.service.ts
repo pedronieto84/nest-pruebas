@@ -1,20 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectFirestoreCollection } from '@nestjs/firestore';
+import { CollectionReference } from '@google-cloud/firestore';
 import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
-    ) { }
+  constructor(
+    @InjectFirestoreCollection('users')
+    private usersCollection: CollectionReference<User>,
+  ) {}
 
-    findAll(): Promise<User[]> {
-        return this.usersRepository.find();
-    }
+  async findAll(): Promise<User[]> {
+    const snapshot = await this.usersCollection.get();
+    return snapshot.docs.map(doc => doc.data());
+  }
 
-    create(user: User): Promise<User> {
-        return this.usersRepository.save(user);
-    }
+  async create(user: User): Promise<User> {
+    const docRef = await this.usersCollection.add(user);
+    const doc = await docRef.get();
+    return doc.data() as User;
+  }
 }
