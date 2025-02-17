@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PokemonController } from './pokemon/pokemon.controller';
-import { PokemonService } from './pokemon/pokemon.service';
-import { PokemonSchema } from './pokemon/pokemon.schema';
-import {ConfigModule} from '@nestjs/config';
+
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -22,11 +18,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     autoLoadEntities: true,
     synchronize: true,
     }),
-    MongooseModule.forRoot('mongodb://localhost/nest-pokemon'),
-    MongooseModule.forFeature([{ name: 'Pokemon', schema: PokemonSchema }]),
-    UsersModule,
+    // MongooseModule.forRoot('mongodb://localhost/nest-pokemon'),
+    // MongooseModule.forFeature([{ name: 'Pokemon', schema: PokemonSchema }]),
   ],
-  controllers: [AppController, PokemonController],
-  providers: [AppService, PokemonService],
+  controllers: [AppController, ],
+  providers: [AppService, ],
 })
 export class AppModule { }
