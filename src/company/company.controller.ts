@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { Company } from '@prisma/client';
 
-@Controller('company')
+@Controller('companies')
 export class CompanyController {
 
     constructor( private readonly companyService: CompanyService) { }

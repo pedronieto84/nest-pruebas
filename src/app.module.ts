@@ -4,25 +4,20 @@ import { AppService } from './app.service';
 
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
+    CompanyModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: process.env.DB_HOST,
-    port: +process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    autoLoadEntities: true,
-    synchronize: true,
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
- 
-    // MongooseModule.forRoot('mongodb://localhost/nest-pokemon'),
-    // MongooseModule.forFeature([{ name: 'Pokemon', schema: PokemonSchema }]),
   ],
-  controllers: [AppController, ],
-  providers: [AppService, ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule { }
