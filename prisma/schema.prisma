@@ -18,10 +18,22 @@ model User {
   userId   String @id @unique @db.VarChar(30)
   name     String @db.VarChar(50)
   company  Company?
+  projects Project[] @relation("UserProjects")
 }
 
 model Company {
   compId   String @id @unique @db.VarChar(30)
   name     String @db.VarChar(50)
   owner    User   @relation(fields: [compId], references: [userId])
+  projects Project[]
 }
+
+model Project {
+  projId   String   @id @unique @db.VarChar(30)
+  name     String   @db.VarChar(50)
+  compId   String
+  company  Company  @relation(fields: [compId], references: [compId])
+  users    User[]   @relation("UserProjects")
+}
+
+
