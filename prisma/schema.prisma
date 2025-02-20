@@ -15,10 +15,13 @@ datasource db {
 
 
 model User {
-  id       String      @id
-  name     String // Conexión con la tabla intermedia
+  userId   String @id
+  name     String
+  company  Company?
 }
 
-model Company{
-  id       String      @id
+model Company {
+  compId   String @id
+  name     String
+  owner    User   @relation(fields: [compId], references: [userId])
 }
