@@ -4,7 +4,10 @@ import { AppService } from './app.service';
 
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CompanyModule } from './company/company.module';
+import { DepartmentsModule } from './endpoints/departments/departments.module';
+import { UsersModule } from './endpoints/users/users.module';
+import { ProjectsModule } from './endpoints/projects/projects.module';
+import { CompaniesModule } from './endpoints/companies/companies.module';
 
 @Module({
   imports: [
@@ -16,7 +19,10 @@ import { CompanyModule } from './company/company.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CompanyModule,
+    DepartmentsModule,
+    UsersModule,
+    ProjectsModule,
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
