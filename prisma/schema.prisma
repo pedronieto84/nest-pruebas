@@ -13,7 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model User {
+  id       String      @id
+  name     String // Conexión con la tabla intermedia
+}
+
 model Company{
-  id Int @id @default(autoincrement())
-  name String
+  id       String      @id
 }
