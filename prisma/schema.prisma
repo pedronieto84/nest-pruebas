@@ -15,10 +15,12 @@ datasource db {
 
 
 model User {
-  userId   String @id @unique @db.VarChar(30)
-  name     String @db.VarChar(50)
-  company  Company?
-  projects Project[] @relation("UserProjects")
+  userId     String      @id @unique @db.VarChar(30)
+  name       String      @db.VarChar(50)
+  company    Company?
+  projects   Project[]   @relation("UserProjects")
+  department Department? @relation(fields: [deptId], references: [deptId])
+  deptId     String?
 }
 
 model Company {
@@ -26,6 +28,7 @@ model Company {
   name     String @db.VarChar(50)
   owner    User   @relation(fields: [compId], references: [userId])
   projects Project[]
+  departments Department[]
 }
 
 model Project {
@@ -34,6 +37,14 @@ model Project {
   compId   String
   company  Company  @relation(fields: [compId], references: [compId])
   users    User[]   @relation("UserProjects")
+}
+
+model Department {
+  deptId   String   @id @unique @db.VarChar(30)
+  name     String   @db.VarChar(50)
+  compId   String
+  company  Company  @relation(fields: [compId], references: [compId])
+  users    User[]
 }
 
 
