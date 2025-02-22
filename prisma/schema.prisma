@@ -26,7 +26,10 @@ model User {
 
   departmen_Manager Departmen_Manager[]
   user_Projects     User_Projects[]
-  user_Relations    User_Relations[]
+
+  boss_relations User_Relations[] @relation("BossRelations")
+
+  worker_relations User_Relations[] @relation("SubordinatedRelations")
 }
 
 model Company {
@@ -79,8 +82,8 @@ model User_Relations {
   bossId         String
   subordinatedId String
   relation       Relation
-  bossIdRelation           User     @relation(fields: [bossId], references: [userId])
-  subordinatedIdRelation          User     @relation(fields: [subordinatedId], references: [userId])
+  boss           User @relation("BossRelations", fields: [bossId], references: [userId])
+  subordinated   User @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
 
   @@id([bossId, subordinatedId])
 }
