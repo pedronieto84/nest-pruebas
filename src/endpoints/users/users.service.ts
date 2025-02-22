@@ -8,11 +8,20 @@ export class UsersService {
   constructor(private prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
+    // Verificar si el departamento existe
+    const department = await this.prisma.department.findUnique({
+      where: { id: createUserDto.deptId },
+    });
+
+    if (!department) {
+      throw new Error('Department not found');
+    }
+
     return await this.prisma.user.create({
       data: {
-        userId: "asdfasdfasdfasdfasdfa",
-        name: "asdfasdfafasfdasdf",
-        deptId: "asdfasdfasdfads"
+        userId: createUserDto.userId,
+        name: createUserDto.name,
+        deptId: createUserDto.deptId,
       },
     });
   }

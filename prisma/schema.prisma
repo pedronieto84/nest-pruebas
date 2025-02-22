@@ -13,38 +13,90 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  userId     String      @id @unique @db.VarChar(30)
-  name       String      @db.VarChar(50)
-  company    Company?
+  userId String @id @unique @db.VarChar(30)
+  name   String @db.VarChar(50)
+  email  String @unique @db.VarChar(50)
+  role   Role   @default(USER)
+
+  company    Company? // Relación opcional con el modelo Company
   projects   Project[]   @relation("UserProjects")
   department Department? @relation(fields: [deptId], references: [deptId])
   deptId     String?
+
+  departmen_Manager Departmen_Manager[]
+  user_Projects     User_Projects[]
+  user_Relations    User_Relations[]
 }
 
 model Company {
-  compId   String @id @unique @db.VarChar(30)
-  name     String @db.VarChar(50)
-  owner    User   @relation(fields: [compId], references: [userId])
-  projects Project[]
+  compId      String       @id @unique @db.VarChar(30)
+  name        String       @db.VarChar(50)
+  owner       User         @relation(fields: [compId], references: [userId])
+  projects    Project[]
   departments Department[]
 }
 
 model Project {
-  projId   String   @id @unique @db.VarChar(30)
-  name     String   @db.VarChar(50)
-  compId   String
-  company  Company  @relation(fields: [compId], references: [compId])
-  users    User[]   @relation("UserProjects")
+  projId        String          @id @unique @db.VarChar(30)
+  name          String          @db.VarChar(50)
+  compId        String
+  settings      String?
+  company       Company         @relation(fields: [compId], references: [compId])
+  users         User[]          @relation("UserProjects")
+  user_Projects User_Projects[]
 }
 
 model Department {
-  deptId   String   @id @unique @db.VarChar(30)
-  name     String   @db.VarChar(50)
+  deptId   String              @id @unique @db.VarChar(30)
+  name     String              @db.VarChar(50)
   compId   String
-  company  Company  @relation(fields: [compId], references: [compId])
+  company  Company             @relation(fields: [compId], references: [compId])
   users    User[]
+  managers Departmen_Manager[]
 }
 
+model Departmen_Manager {
+  deptId     String
+  userId     String
+  department Department @relation(fields: [deptId], references: [deptId])
+  user       User       @relation(fields: [userId], references: [userId])
 
+  @@id([deptId, userId])
+}
+
+model User_Projects {
+  userId  String
+  projId  String
+  role    ProjectRole
+  user    User        @relation(fields: [userId], references: [userId])
+  project Project     @relation(fields: [projId], references: [projId])
+
+  @@id([userId, projId])
+}
+
+model User_Relations {
+  bossId         String
+  subordinatedId String
+  relation       Relation
+  bossIdRelation           User     @relation(fields: [bossId], references: [userId])
+  subordinatedIdRelation          User     @relation(fields: [subordinatedId], references: [userId])
+
+  @@id([bossId, subordinatedId])
+}
+
+enum Role {
+  ADMIN
+  USER
+  OWNER
+}
+
+enum ProjectRole {
+  BOSS
+  WORKER
+}
+
+enum Relation {
+  VIEW
+  EDIT
+}
