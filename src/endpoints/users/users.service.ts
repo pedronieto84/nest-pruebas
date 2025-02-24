@@ -3,13 +3,23 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+import { Role } from '@prisma/client';
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
     // Verificar si el departamento existe
-    return createUserDto
+
+    const objectToCreate = {
+      email: createUserDto.email,
+      name: createUserDto.name,
+      role: createUserDto.role as Role,
+      userId: ,
+    }
+    return await this.prisma.user.create({
+      data: objectToCreate});
    
   }
 
