@@ -10,7 +10,22 @@ import { generateUUID } from '../../helpers/helpers'; // Updated import path
 export class UsersService {
   constructor(private prisma: PrismaService) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async createWorker(createUserDto: CreateUserDto) {
+    // Verificar si el departamento existe
+
+    const objectToCreate = {
+      email: createUserDto.email,
+      name: createUserDto.name,
+      role: createUserDto.role as Role,
+      userId: generateUUID(),
+    }
+    return await this.prisma.user.create({
+      data: objectToCreate
+    });
+
+  }
+
+  async createOwner(createUserDto: CreateUserDto) {
     // Verificar si el departamento existe
 
     const objectToCreate = {
