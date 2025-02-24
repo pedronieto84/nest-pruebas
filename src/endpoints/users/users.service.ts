@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 import { Role } from '@prisma/client';
-import { generateUUID } from 'src/helpers/helpers';
+import { generateUUID } from '../../helpers/helpers'; // Updated import path
 
 @Injectable()
 export class UsersService {
