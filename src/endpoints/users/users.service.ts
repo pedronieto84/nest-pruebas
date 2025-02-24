@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,7 +16,7 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
     const userId = generateUUID();  // Firebase auth
@@ -27,17 +27,17 @@ export class UsersService {
 
     const compId = createUserDto.compId
 
-    if(!compId) {
-      throw new Error('Company Id is required');
+    if (!compId) {
+      throw new HttpException('Company Id is required', HttpStatus.BAD_REQUEST);
     }
 
 
 
     // Load any DeptId and any ProjId
 
-    const deptId = createUserDto.deptId ? createUserDto.deptId : (await this.prisma.department.findFirst({where: {compId: compId}})).deptId
+    const deptId = createUserDto.deptId ? createUserDto.deptId : (await this.prisma.department.findFirst({ where: { compId: compId } })).deptId
 
-    const projId = createUserDto.projId ? createUserDto.projId : (await this.prisma.project.findFirst({where: {compId: compId}})).projId
+    const projId = createUserDto.projId ? createUserDto.projId : (await this.prisma.project.findFirst({ where: { compId: compId } })).projId
 
     const userToCreate = {
       email: createUserDto.email,
@@ -56,11 +56,11 @@ export class UsersService {
       });
 
       const projectUser = await prisma.user_Projects.create({
-        data: {projId, userId, role: ProjectRole.WORKER},
+        data: { projId, userId, role: ProjectRole.WORKER },
       });
 
       const userRelation = await prisma.user_Relations.create({
-        data: {bossId: userId, subordinatedId: userId, relation: Relation.VIEW},
+        data: { bossId: userId, subordinatedId: userId, relation: Relation.VIEW },
       });
 
       return { userId: user.userId, email: user.email, name: user.name };
@@ -74,7 +74,7 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
     const userId = generateUUID(); // Aqui tendre que hacer el Firebase auth
@@ -175,7 +175,7 @@ export class UsersService {
     })
     console.log('user', user);
     if (user) return user
-    throw new Error("User does not exist")
+    throw new HttpException("User does not exist", HttpStatus.NOT_FOUND);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -185,7 +185,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error('User does not exist');
+      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
     }
 
     // Actualizar solo los campos especificados en updateUserDto
@@ -217,7 +217,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error('User does not exist or is not an OWNER');
+      throw new HttpException('User does not exist or is not an OWNER', HttpStatus.NOT_FOUND);
     }
 
     switch (user.role) {
@@ -264,36 +264,36 @@ export class UsersService {
 
           return { message: 'User and related entities deleted successfully' };
         });
-      
+
       case Role.WORKER:
         return this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
-               // Delete user relations
-               await prisma.user_Relations.deleteMany({
-                where: {
-                  OR: [
-                    { bossId: id },
-                    { subordinatedId: id },
-                  ],
-                },
-              });
-    
-              // Delete user projects
-              await prisma.user_Projects.deleteMany({
-                where: { userId: id },
-              });
-    
-              // Delete department manager
-              await prisma.department_Manager.deleteMany({
-                where: { userId: id },
-              });
-    
-               
-              // Delete user
-              await prisma.user.delete({
-                where: { userId: id },
-              });
-    
-              return { message: 'User and related entities deleted successfully' };
+          // Delete user relations
+          await prisma.user_Relations.deleteMany({
+            where: {
+              OR: [
+                { bossId: id },
+                { subordinatedId: id },
+              ],
+            },
+          });
+
+          // Delete user projects
+          await prisma.user_Projects.deleteMany({
+            where: { userId: id },
+          });
+
+          // Delete department manager
+          await prisma.department_Manager.deleteMany({
+            where: { userId: id },
+          });
+
+
+          // Delete user
+          await prisma.user.delete({
+            where: { userId: id },
+          });
+
+          return { message: 'User and related entities deleted successfully' };
         })
 
       default:
