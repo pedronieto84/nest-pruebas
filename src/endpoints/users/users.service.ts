@@ -21,33 +21,22 @@ export class UsersService {
 
     const userId = generateUUID();  // Firebase auth
 
-    // Necesito saber a que projectId
-    // Necesito saber a que CompanyId
-    // Necesito saber a que DepartmentId
-
-    const compId = createUserDto.compId
+    const compId = createUserDto.compId;
 
     if (!compId) {
       throw new HttpException('Company Id is required', HttpStatus.BAD_REQUEST);
     }
 
-
-
-    // Load any DeptId and any ProjId
-
-    const deptId = createUserDto.deptId ? createUserDto.deptId : (await this.prisma.department.findFirst({ where: { compId: compId } })).deptId
-
-    const projId = createUserDto.projId ? createUserDto.projId : (await this.prisma.project.findFirst({ where: { compId: compId } })).projId
+    const deptId = createUserDto.deptId ? createUserDto.deptId : (await this.prisma.department.findFirst({ where: { compId: compId } })).deptId;
+    const projId = createUserDto.projId ? createUserDto.projId : (await this.prisma.project.findFirst({ where: { compId: compId } })).projId;
 
     const userToCreate = {
       email: createUserDto.email,
       name: createUserDto.name,
       role: Role.WORKER, // Ensure valid Role enum value
-
       userId: userId,
       deptId: deptId,
       compId: compId
-
     };
 
     return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
@@ -65,7 +54,6 @@ export class UsersService {
 
       return { userId: user.userId, email: user.email, name: user.name };
     });
-
   }
 
   async createOwner(createUserDto: CreateUserDto) {
@@ -85,9 +73,7 @@ export class UsersService {
       email: createUserDto.email,
       name: createUserDto.name,
       role: Role.OWNER, // Ensure valid Role enum value
-
       userId: userId,
-
     };
 
     const companyToCreate = {

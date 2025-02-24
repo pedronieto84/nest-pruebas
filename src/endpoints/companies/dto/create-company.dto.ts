@@ -1,1 +1,4 @@
-export class CreateCompanyDto {}
+export class CreateCompanyDto {
+  compId?: string;
+  name: string;
+}

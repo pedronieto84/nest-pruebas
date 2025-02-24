@@ -8,16 +8,27 @@ export class CompaniesService {
   constructor(private prisma: PrismaService) { }
 
   create(createCompanyDto: CreateCompanyDto) {
+    const { compId, name } = createCompanyDto;
 
-    return `This action creates a companies`;
+    const data: any = { name };
+
+    if (compId) {
+      data.compId = compId;
+    }
+
+    return this.prisma.company.create({
+      data,
+    });
   }
 
   findAll() {
-    return `This action returns all companies`;
+    return this.prisma.company.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  findOne(id: string) {
+    return this.prisma.company.findUnique({
+      where: { compId: id }
+    });
   }
 
   update(id: number, updateCompanyDto: UpdateCompanyDto) {
