@@ -122,18 +122,42 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  async findAll() {
+    return await this.prisma.user.findMany();
   }
 
-  findOne(id: string) {
-    return this.prisma.user.findUnique({
+  async findOne(id: string) {
+    const user =  await this.prisma.user.findUnique({
       where: { userId: id }
     })
+    console.log('user', user);
+    if(user) return user
+    throw new Error("User does not exist")
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    // Primero cargamos el usuario previo, para ver si existe
+    const user = await this.prisma.user.findUnique({
+      where: { userId: id }
+    });
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    // Actualizar solo los campos especificados en updateUserDto
+    const updatedData: Partial<UpdateUserDto> = {};
+    if (updateUserDto.email) {
+      updatedData.email = updateUserDto.email;
+    }
+    if (updateUserDto.name) {
+      updatedData.name = updateUserDto.name;
+    }
+
+    return await this.prisma.user.update({
+      where: { userId: id },
+      data: updatedData,
+    });
   }
 
   remove(id: number) {
