@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-import { Role, Prisma } from '@prisma/client'; // Import Prisma
+import { Role, Prisma, ProjectRole, Relation } from '@prisma/client'; // Import Prisma
 import { generateUUID } from '../../helpers/helpers'; // Updated import path
 
 @Injectable()
@@ -41,7 +41,7 @@ export class UsersService {
     const userToCreate = {
       email: createUserDto.email,
       name: createUserDto.name,
-      role: createUserDto.role as Role,
+      role: Role.OWNER, // Ensure valid Role enum value
       compId: userId,
       userId: userId,
       departmentId
@@ -72,13 +72,13 @@ export class UsersService {
     const projectUserToCreate = {
       projId: projectId,
       userId: userId,
-      role: 'BOSS' as const,
+      role: ProjectRole.BOSS,
     };
 
     const userRelationToCreate = {
       bossId: userId,
       subordinatedId: userId,
-      relation: 'EDIT' as const,
+      relation: Relation.EDIT,
     };
 
     return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
