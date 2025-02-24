@@ -127,11 +127,11 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user =  await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { userId: id }
     })
     console.log('user', user);
-    if(user) return user
+    if (user) return user
     throw new Error("User does not exist")
   }
 
@@ -160,7 +160,103 @@ export class UsersService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { userId: id },
+      include: {
+        company: true,
+        department: true,
+        user_Projects: true,
+        departmen_Manager: true,
+        boss_relations: true,
+        worker_relations: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error('User does not exist or is not an OWNER');
+    }
+
+    switch (user.role) {
+      case Role.OWNER:
+        return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
+          // Delete user relations
+          await prisma.user_Relations.deleteMany({
+            where: {
+              OR: [
+                { bossId: id },
+                { subordinatedId: id },
+              ],
+            },
+          });
+
+          // Delete user projects
+          await prisma.user_Projects.deleteMany({
+            where: { userId: id },
+          });
+
+          // Delete department manager
+          await prisma.department_Manager.deleteMany({
+            where: { userId: id },
+          });
+
+          // Delete department
+          if (user.department) {
+            await prisma.department.delete({
+              where: { deptId: user.department.deptId },
+            });
+          }
+
+          // Delete company
+          if (user.company) {
+            await prisma.company.delete({
+              where: { compId: user.company.compId },
+            });
+          }
+
+          // Delete user
+          await prisma.user.delete({
+            where: { userId: id },
+          });
+
+          return { message: 'User and related entities deleted successfully' };
+        });
+      
+      case Role.WORKER:
+        return this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
+               // Delete user relations
+               await prisma.user_Relations.deleteMany({
+                where: {
+                  OR: [
+                    { bossId: id },
+                    { subordinatedId: id },
+                  ],
+                },
+              });
+    
+              // Delete user projects
+              await prisma.user_Projects.deleteMany({
+                where: { userId: id },
+              });
+    
+              // Delete department manager
+              await prisma.department_Manager.deleteMany({
+                where: { userId: id },
+              });
+    
+               
+              // Delete user
+              await prisma.user.delete({
+                where: { userId: id },
+              });
+    
+              return { message: 'User and related entities deleted successfully' };
+        })
+
+      default:
+        return await this.prisma.user.delete({
+          where: { userId: id },
+        });
+    }
   }
 }
