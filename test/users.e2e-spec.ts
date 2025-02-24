@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 
 describe('UsersController (e2e)', () => {
     let app: INestApplication;
+    let userId: string;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -19,6 +20,14 @@ describe('UsersController (e2e)', () => {
         await app.close();
     });
 
+    afterEach(async () => {
+        if (userId) {
+            await request(app.getHttpServer())
+                .delete(`/users/${userId}`)
+                .expect(200);
+        }
+    });
+
     it('/POST users', async () => {
         const createUserDto = {
             email: 'test@example.com',
@@ -30,6 +39,8 @@ describe('UsersController (e2e)', () => {
             .post('/users')
             .send(createUserDto)
             .expect(201);
+
+        userId = response.body.userId;
 
         expect(response.body).toHaveProperty('email', createUserDto.email);
         expect(response.body).toHaveProperty('name', createUserDto.name);
