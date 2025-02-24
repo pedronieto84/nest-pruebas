@@ -30,8 +30,8 @@ describe('UsersController (e2e)', () => {
 
     it('/POST users', async () => {
         const createUserDto = {
-            email: 'test@example.com',
-            name: 'Test User',
+            email: `${Math.random().toString(36).substring(2, 6)}@test.com`, // Generate a random email
+            name: Math.random().toString(36).substring(2, 6), // Generate a random 4-letter word
             role: 'WORKER',
         };
 
