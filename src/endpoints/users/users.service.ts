@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 import { Role } from '@prisma/client';
+import { generateUUID } from 'src/helpers/helpers';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +17,7 @@ export class UsersService {
       email: createUserDto.email,
       name: createUserDto.name,
       role: createUserDto.role as Role,
-      userId: ,
+      userId: generateUUID() ,
     }
     return await this.prisma.user.create({
       data: objectToCreate});
