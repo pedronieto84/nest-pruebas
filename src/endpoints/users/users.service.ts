@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -17,11 +17,12 @@ export class UsersService {
       email: createUserDto.email,
       name: createUserDto.name,
       role: createUserDto.role as Role,
-      userId: generateUUID() ,
+      userId: generateUUID(),
     }
     return await this.prisma.user.create({
-      data: objectToCreate});
-   
+      data: objectToCreate
+    });
+
   }
 
   findAll() {
