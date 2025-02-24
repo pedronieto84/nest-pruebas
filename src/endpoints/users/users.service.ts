@@ -44,6 +44,7 @@ export class UsersService {
       role: createUserDto.role as Role,
       compId: userId,
       userId: userId,
+      departmentId
     };
 
     const companyToCreate = {
@@ -68,6 +69,18 @@ export class UsersService {
       compId: userId,
     };
 
+    const projectUserToCreate = {
+      projId: projectId,
+      userId: userId,
+      role: 'BOSS' as const,
+    };
+
+    const userRelationToCreate = {
+      bossId: userId,
+      subordinatedId: userId,
+      relation: 'EDIT' as const,
+    };
+
     return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
       const user = await prisma.user.create({
         data: userToCreate,
@@ -81,7 +94,7 @@ export class UsersService {
         data: departmentToCreate,
       });
 
-      const departmentManager = await prisma.departmen_Manager.create({
+      const departmentManager = await prisma.department_Manager.create({
         data: departmentManagerToCreate,
       });
 
@@ -89,7 +102,15 @@ export class UsersService {
         data: projectToCreate,
       });
 
-      return { user, company, department, departmentManager, project };
+      const projectUser = await prisma.user_Projects.create({
+        data: projectUserToCreate,
+      });
+
+      const userRelation = await prisma.user_Relations.create({
+        data: userRelationToCreate,
+      });
+
+      return { user, company, department, departmentManager, project, projectUser, userRelation };
     });
   }
 
