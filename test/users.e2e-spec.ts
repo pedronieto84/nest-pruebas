@@ -23,7 +23,7 @@ describe('UsersController (e2e)', () => {
         const createUserDto = {
             email: 'test@example.com',
             name: 'Test User',
-            role: 'USER',
+            role: 'WORKER',
         };
 
         const response = await request(app.getHttpServer())
