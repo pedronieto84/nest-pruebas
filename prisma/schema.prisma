@@ -14,32 +14,30 @@ datasource db {
 }
 
 model User {
-  userId String  @id @unique @db.VarChar(30)
-  name   String  @db.VarChar(50)
-  email  String  @unique @db.VarChar(50)
-  role   Role    @default(USER)
-  deptId String?
-  compId String?
+  userId String @id @unique @db.VarChar(30)
+  name   String @db.VarChar(50)
+  email  String @unique @db.VarChar(50)
+  role   Role   @default(WORKER)
 
-  company    Company?    @relation(fields: [compId], references: [compId])
+  company    Company? // Relación opcional con el modelo Company
   projects   Project[]   @relation("UserProjects")
   department Department? @relation(fields: [deptId], references: [deptId])
+  deptId     String?
 
   departmen_Manager Departmen_Manager[]
   user_Projects     User_Projects[]
 
-  boss_relations   User_Relations[] @relation("BossRelations")
+  boss_relations User_Relations[] @relation("BossRelations")
+
   worker_relations User_Relations[] @relation("SubordinatedRelations")
 }
 
 model Company {
   compId      String       @id @unique @db.VarChar(30)
   name        String       @db.VarChar(50)
-  owner       User         @relation("CompanyOwner", fields: [compId], references: [userId])
   projects    Project[]
   departments Department[]
-  users       User[]       @relation("CompanyUsers", fields: [compId], references: [compId])
-  
+  users       User[]
 }
 
 model Project {
@@ -84,15 +82,15 @@ model User_Relations {
   bossId         String
   subordinatedId String
   relation       Relation
-  boss           User     @relation("BossRelations", fields: [bossId], references: [userId])
-  subordinated   User     @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
+  boss           User @relation("BossRelations", fields: [bossId], references: [userId])
+  subordinated   User @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
 
   @@id([bossId, subordinatedId])
 }
 
 enum Role {
   ADMIN
-  USER
+  WORKER
   OWNER
 }
 
