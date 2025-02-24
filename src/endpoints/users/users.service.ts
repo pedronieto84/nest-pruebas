@@ -118,16 +118,18 @@ export class UsersService {
         },
       });
 
-      return { user, company, department, departmentManager, project, projectUser, userRelation };
+      return { userId: user.userId, email: user.email, name: user.name };
     });
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.prisma.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    return this.prisma.user.findUnique({
+      where: { userId: id }
+    })
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
