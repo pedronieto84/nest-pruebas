@@ -42,9 +42,9 @@ export class UsersService {
       email: createUserDto.email,
       name: createUserDto.name,
       role: Role.OWNER, // Ensure valid Role enum value
-      compId: userId,
+
       userId: userId,
-      departmentId
+
     };
 
     const companyToCreate = {
@@ -108,6 +108,14 @@ export class UsersService {
 
       const userRelation = await prisma.user_Relations.create({
         data: userRelationToCreate,
+      });
+
+      await prisma.user.update({
+        where: { userId: userId },
+        data: {
+          compId: userId,
+          deptId: departmentId,
+        },
       });
 
       return { user, company, department, departmentManager, project, projectUser, userRelation };
