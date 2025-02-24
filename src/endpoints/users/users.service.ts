@@ -9,21 +9,8 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     // Verificar si el departamento existe
-    const department = await this.prisma.department.findUnique({
-      where: { id: createUserDto.deptId },
-    });
-
-    if (!department) {
-      throw new Error('Department not found');
-    }
-
-    return await this.prisma.user.create({
-      data: {
-        userId: createUserDto.userId,
-        name: createUserDto.name,
-        deptId: createUserDto.deptId,
-      },
-    });
+    return createUserDto
+   
   }
 
   findAll() {

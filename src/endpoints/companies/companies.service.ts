@@ -9,9 +9,7 @@ export class CompaniesService {
 
   create(createCompanyDto: CreateCompanyDto) {
     
-    return this.prisma.company.create({
-      data: createCompanyDto,
-    });
+    return `This action creates a companies`;
   }
 
   findAll() {
