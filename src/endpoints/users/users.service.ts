@@ -11,16 +11,59 @@ export class UsersService {
   constructor(private prisma: PrismaService) { }
 
   async createWorker(createUserDto: CreateUserDto) {
-    // Verificar si el departamento existe
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: createUserDto.email },
+    });
 
-    const objectToCreate = {
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
+
+    const userId = generateUUID();  // Firebase auth
+
+    // Necesito saber a que projectId
+    // Necesito saber a que CompanyId
+    // Necesito saber a que DepartmentId
+
+    const compId = createUserDto.compId
+
+    if(!compId) {
+      throw new Error('Company Id is required');
+    }
+
+
+
+    // Load any DeptId and any ProjId
+
+    const deptId = createUserDto.deptId ? createUserDto.deptId : (await this.prisma.department.findFirst({where: {compId: compId}})).deptId
+
+    const projId = createUserDto.projId ? createUserDto.projId : (await this.prisma.project.findFirst({where: {compId: compId}})).projId
+
+    const userToCreate = {
       email: createUserDto.email,
       name: createUserDto.name,
-      role: createUserDto.role as Role,
-      userId: generateUUID(),
-    }
-    return await this.prisma.user.create({
-      data: objectToCreate
+      role: Role.WORKER, // Ensure valid Role enum value
+
+      userId: userId,
+      deptId: deptId,
+      compId: compId
+
+    };
+
+    return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
+      const user = await prisma.user.create({
+        data: userToCreate,
+      });
+
+      const projectUser = await prisma.user_Projects.create({
+        data: {projId, userId, role: ProjectRole.WORKER},
+      });
+
+      const userRelation = await prisma.user_Relations.create({
+        data: {bossId: userId, subordinatedId: userId, relation: Relation.VIEW},
+      });
+
+      return { userId: user.userId, email: user.email, name: user.name };
     });
 
   }
