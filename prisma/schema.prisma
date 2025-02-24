@@ -18,8 +18,8 @@ model User {
   name   String @db.VarChar(50)
   email  String @unique @db.VarChar(50)
   role   Role   @default(WORKER)
-
-  company    Company? // Relación opcional con el modelo Company
+  compId    String?          @db.VarChar(30)
+  company    Company?    @relation(fields: [compId], references: [compId]) // Relación opcional con el modelo Company
   projects   Project[]   @relation("UserProjects")
   department Department? @relation(fields: [deptId], references: [deptId])
   deptId     String?
@@ -30,6 +30,7 @@ model User {
   boss_relations User_Relations[] @relation("BossRelations")
 
   worker_relations User_Relations[] @relation("SubordinatedRelations")
+  
 }
 
 model Company {
@@ -82,8 +83,8 @@ model User_Relations {
   bossId         String
   subordinatedId String
   relation       Relation
-  boss           User @relation("BossRelations", fields: [bossId], references: [userId])
-  subordinated   User @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
+  boss           User     @relation("BossRelations", fields: [bossId], references: [userId])
+  subordinated   User     @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
 
   @@id([bossId, subordinatedId])
 }
