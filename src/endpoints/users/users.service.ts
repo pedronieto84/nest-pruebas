@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-import { Role } from '@prisma/client';
+import { Role, Prisma } from '@prisma/client'; // Import Prisma
 import { generateUUID } from '../../helpers/helpers'; // Updated import path
 
 @Injectable()
@@ -26,18 +26,40 @@ export class UsersService {
   }
 
   async createOwner(createUserDto: CreateUserDto) {
-    // Verificar si el departamento existe
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: createUserDto.email },
+    });
 
-    const objectToCreate = {
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
+
+    const userId = generateUUID(); // Aqui tendre que hacer el Firebase auth
+
+    const userToCreate = {
       email: createUserDto.email,
       name: createUserDto.name,
       role: createUserDto.role as Role,
-      userId: generateUUID(),
-    }
-    return await this.prisma.user.create({
-      data: objectToCreate
-    });
+      compId: userId,
+      userId: userId,
+    };
 
+    const companyToCreate = {
+      name: createUserDto.name,
+      compId: userId,
+    };
+
+    return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
+      const user = await prisma.user.create({
+        data: userToCreate,
+      });
+
+      const company = await prisma.company.create({
+        data: companyToCreate,
+      });
+
+      return { user, company };
+    });
   }
 
   findAll() {
