@@ -24,7 +24,7 @@ model User {
   department Department? @relation(fields: [deptId], references: [deptId])
   deptId     String?
 
-  departmen_Manager Departmen_Manager[]
+  departmen_Manager Department_Manager[]
   user_Projects     User_Projects[]
 
   boss_relations User_Relations[] @relation("BossRelations")
@@ -57,10 +57,10 @@ model Department {
   compId   String
   company  Company             @relation(fields: [compId], references: [compId])
   users    User[]
-  managers Departmen_Manager[]
+  managers Department_Manager[]
 }
 
-model Departmen_Manager {
+model Department_Manager {
   deptId     String
   userId     String
   department Department @relation(fields: [deptId], references: [deptId])

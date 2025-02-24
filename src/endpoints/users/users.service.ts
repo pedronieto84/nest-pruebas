@@ -35,6 +35,8 @@ export class UsersService {
     }
 
     const userId = generateUUID(); // Aqui tendre que hacer el Firebase auth
+    const departmentId = generateUUID();
+    const projectId = generateUUID();
 
     const userToCreate = {
       email: createUserDto.email,
@@ -49,6 +51,23 @@ export class UsersService {
       compId: userId,
     };
 
+    const departmentToCreate = {
+      name: createUserDto.name,
+      deptId: departmentId,
+      compId: userId,
+    };
+
+    const departmentManagerToCreate = {
+      deptId: departmentId,
+      userId: userId,
+    };
+
+    const projectToCreate = {
+      name: createUserDto.name,
+      projId: projectId,
+      compId: userId,
+    };
+
     return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
       const user = await prisma.user.create({
         data: userToCreate,
@@ -58,7 +77,19 @@ export class UsersService {
         data: companyToCreate,
       });
 
-      return { user, company };
+      const department = await prisma.department.create({
+        data: departmentToCreate,
+      });
+
+      const departmentManager = await prisma.departmen_Manager.create({
+        data: departmentManagerToCreate,
+      });
+
+      const project = await prisma.project.create({
+        data: projectToCreate,
+      });
+
+      return { user, company, department, departmentManager, project };
     });
   }
 
