@@ -17,11 +17,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // 🔥 Connect to the Firebase Auth Emulator
-
 connectAuthEmulator(auth, "http://localhost:9099");
 
-
-async function createFirebaseUser(email: string, password: string) {
+async function createFirebaseUser(email: string, password: string = '123456') {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         return userCredential.user;

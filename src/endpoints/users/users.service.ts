@@ -5,10 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 import { Role, Prisma, ProjectRole, Relation } from '@prisma/client'; // Import Prisma
 
-
-import { auth } from '../../firebase/firebaseAuth'; // Import Firebase auth
-import {createUserWithEmailAndPassword } from "firebase/auth";
-
+import { createFirebaseUser } from '../../firebase/firebaseAuth'; // Import Firebase auth
 
 @Injectable()
 export class UsersService {
@@ -23,7 +20,14 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const firebaseId = (await createUserWithEmailAndPassword(auth, createUserDto.email, '123456')).user.uid // Firebase auth
+    let firebaseUser;
+    try {
+      firebaseUser = await createFirebaseUser(createUserDto.email);
+    } catch (error) {
+      throw new HttpException('Error creating Authenticated user', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    const firebaseId = firebaseUser.uid; // Firebase auth
 
     const compId = createUserDto.compId;
 
@@ -49,7 +53,7 @@ export class UsersService {
       });
 
       await prisma.user_Projects.create({
-        data: { projId, userId: user.userId , role: ProjectRole.WORKER },
+        data: { projId, userId: user.userId, role: ProjectRole.WORKER },
       });
 
       await prisma.user_Relations.create({
@@ -69,16 +73,20 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
- 
+    let firebaseUser;
+    try {
+      firebaseUser = await createFirebaseUser(createUserDto.email);
+    } catch (error) {
+      throw new HttpException('Error creating Authenticated user', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
       const user = await prisma.user.create({
         data: {
           email: createUserDto.email,
           name: createUserDto.name,
-          role: Role.OWNER, 
-          firebaseId: (await createUserWithEmailAndPassword(auth, createUserDto.email,'123456')).user.uid // Firebase auth// Ensure valid Role enum value
-          
+          role: Role.OWNER,
+          firebaseId: firebaseUser.uid // Firebase auth
         },
       });
 
@@ -87,7 +95,7 @@ export class UsersService {
       });
 
       const department = await prisma.department.create({
-        data: {name: createUserDto.name, compId: company.compId},
+        data: { name: createUserDto.name, compId: company.compId },
       });
 
       await prisma.department_Manager.create({
@@ -95,7 +103,7 @@ export class UsersService {
       });
 
       const project = await prisma.project.create({
-        data: {name: createUserDto.name, compId: company.compId },
+        data: { name: createUserDto.name, compId: company.compId },
       });
 
       await prisma.user_Projects.create({
@@ -239,7 +247,6 @@ export class UsersService {
           await prisma.department_Manager.deleteMany({
             where: { userId: id },
           });
-
 
           // Delete user
           await prisma.user.delete({

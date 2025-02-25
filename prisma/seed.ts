@@ -1,12 +1,9 @@
 import { PrismaClient, Role, ProjectRole, Relation } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
 
-
-import { auth } from './../src/firebase/firebaseAuth';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth , createFirebaseUser} from './../src/firebase/firebaseAuth';
 
 const prisma = new PrismaClient();
-
 
 const configObject = {
     companies: 2,
@@ -22,7 +19,6 @@ async function main() {
         data: getCompanies(configObject.companies).map((company) => ({
             name: company
         })),
-
     });
 
     // Cojo las ids de las comp created
@@ -32,7 +28,6 @@ async function main() {
                 in: getCompanies(configObject.companies)
             }
         }
-
     })
 
     // Tengo que crear proyectos de cada compañías
@@ -49,7 +44,6 @@ async function main() {
     for (const comp of createdCompanies) {
         await prisma.department.createMany({
             data: getDepartments(configObject.departments).map((department) => ({
-
                 name: department,
                 compId: comp.compId
             })),
@@ -73,15 +67,12 @@ async function main() {
             }
         });
 
-        // Creo el user en firebase
-
-
         // Creo todos los empleados de una compañía asignandoles a una compañía y departamneto aleatorio
         const usersData = await Promise.all(
             getNames(configObject.workers).map(async (name, index) => {
-                const firebaseUser = await createUserWithEmailAndPassword(auth, `${name.toLowerCase()}-${index}@${comp.name}.com`, '123456');
+                const firebaseUser = await createFirebaseUser(`${name.toLowerCase()}-${index}@${comp.name}.com`);
                 return {
-                    firebaseId: firebaseUser.user.uid,
+                    firebaseId: firebaseUser.uid,
                     name: `${name} ${getSurnames(configObject.workers)[index]}`,
                     compId: comp.compId,
                     email: `${name.toLowerCase()}-${index}@${comp.name}.com`,
@@ -123,7 +114,6 @@ async function main() {
                 }
             });
 
-
             // Creo las relaciones entre trabajadores
             if (index > 0) {
                 await prisma.user_Relations.create({
@@ -145,14 +135,13 @@ async function main() {
                 });
             }
         }
-
-
     }
+
     // Add a user with email "admin@company" and role "ADMIN" and no compId or projId or deptId
-    const adminFirebase = await createUserWithEmailAndPassword(auth, `pedro@admin.com`, '123456');
+    const adminFirebase = await createFirebaseUser(`pedro@admin.com`);
     await prisma.user.create({
         data: {
-            firebaseId: adminFirebase.user.uid,
+            firebaseId: adminFirebase.uid,
             name: "Admin",
             email: `pedro@admin.com`,
             role: Role.ADMIN
