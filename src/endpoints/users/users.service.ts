@@ -23,7 +23,7 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const firebaseId = createUserWithEmailAndPassword(auth, createUserDto.email, generateUUID()) // Firebase auth
+    const firebaseId = (await createUserWithEmailAndPassword(auth, createUserDto.email, generateUUID())).user.uid // Firebase auth
 
     const compId = createUserDto.compId;
 
