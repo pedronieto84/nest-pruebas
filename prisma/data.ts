@@ -4,7 +4,7 @@ export const companies: string[] = [
     "Iberdrola",
     "Inditex",
     "Repsol",
-    "Telefónica",
+    "Telefonica",
     "Endesa",
     "CaixaBank",
     "Aena",
@@ -13,7 +13,7 @@ export const companies: string[] = [
 
 export const names: string[] = [
     // Españoles
-    "Alejandro", "María", "Carlos", "Lucía", "Javier", "Ana", "David", "Sofía", "Daniel", "Laura",
+    "Alejandro", "Maria", "Carlos", "Lucia", "Javier", "Ana", "David", "Sofia", "Daniel", "Laura",
     "Miguel", "Paula", "Sergio", "Elena", "Hugo",
     // Anglosajones
     "William", "Emily", "John", "Olivia", "James",
@@ -29,12 +29,12 @@ export const names: string[] = [
 
 export const surnames = [
     // Españoles
-    "García", "Fernández", "González", "Rodríguez", "López", "Martínez", "Sánchez", "Pérez", "Gómez", "Martín",
-    "Jiménez", "Ruiz", "Hernández", "Díaz", "Moreno", "Álvarez", "Muñoz", "Romero", "Alonso", "Gutiérrez",
+    "Garcia", "Fernandez", "Gonzalez", "Rodriguez", "Lopez", "Martinez", "Sanchez", "Perez", "Gomez", "Martin",
+    "Jimenez", "Ruiz", "Hernandez", "Diaz", "Moreno", "Alvarez", "Munoz", "Romero", "Alonso", "Gutierrez",
     // Anglosajones
     "Smith", "Johnson", "Brown", "Taylor", "Anderson",
     // Alemanes
-    "Schmidt", "Müller", "Weber", "Schneider", "Fischer",
+    "Schmidt", "Muller", "Weber", "Schneider", "Fischer",
     // Rusos
     "Ivanov", "Petrov", "Sokolov", "Volkov", "Kuznetsov",
     // Chinos
@@ -44,29 +44,29 @@ export const surnames = [
 ];
 
 export const departments: string[] = [
-    "Marketing Estratégico",
+    "Marketing Estrategico",
     "Contabilidad y Finanzas",
-    "Innovación y Desarrollo",
-    "Relaciones Públicas",
-    "Logística y Distribución",
-    "Atención al Cliente",
+    "Innovacion y Desarrollo",
+    "Relaciones Publicas",
+    "Logistica y Distribucion",
+    "Atencion al Cliente",
     "Desarrollo de Software",
     "Recursos Humanos",
-    "Investigación de Mercado",
-    "Operaciones y Producción"
+    "Investigacion de Mercado",
+    "Operaciones y Produccion"
 ];
 
 export const projects: string[] = [
-    "Expansión Digital",
-    "Optimización Financiera",
-    "Nueva App Móvil",
+    "Expansion Digital",
+    "Optimizacion Financiera",
+    "Nueva App Movil",
     "Sostenibilidad Empresarial",
-    "Automatización de Logística",
-    "Campaña Publicitaria Global",
+    "Automatizacion de Logistica",
+    "Campana Publicitaria Global",
     "Plataforma de E-learning",
-    "Análisis de Tendencias de Mercado",
-    "Mejoras en la Atención al Cliente",
-    "Seguridad Cibernética Avanzada"
+    "Analisis de Tendencias de Mercado",
+    "Mejoras en la Atencion al Cliente",
+    "Seguridad Cibernetica Avanzada"
 ];
 
 export const getCompanies = (amount: number = 5): string[] => {
