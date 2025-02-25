@@ -14,15 +14,16 @@ datasource db {
 }
 
 model User {
-  userId String @id @unique @db.VarChar(30)
+  userId Int @id @unique @default(autoincrement())
+  firebaseId String @unique @db.VarChar(30)
   name   String @db.VarChar(50)
   email  String @unique @db.VarChar(50)
   role   Role   @default(WORKER)
-  compId    String?          @db.VarChar(30)
+  compId    Int?          
   company    Company?    @relation(fields: [compId], references: [compId]) // Relación opcional con el modelo Company
   projects   Project[]   @relation("UserProjects")
   department Department? @relation(fields: [deptId], references: [deptId])
-  deptId     String?
+  deptId     Int?
 
   departmen_Manager Department_Manager[]
   user_Projects     User_Projects[]
@@ -34,7 +35,7 @@ model User {
 }
 
 model Company {
-  compId      String       @id @unique @db.VarChar(30)
+  compId      Int @id @unique @default(autoincrement())
   name        String       @db.VarChar(50)
   projects    Project[]
   departments Department[]
@@ -42,9 +43,9 @@ model Company {
 }
 
 model Project {
-  projId        String          @id @unique @db.VarChar(30)
+  projId        Int @id @unique @default(autoincrement())
   name          String          @db.VarChar(50)
-  compId        String
+  compId        Int
   settings      String?
   company       Company         @relation(fields: [compId], references: [compId])
   users         User[]          @relation("UserProjects")
@@ -52,17 +53,17 @@ model Project {
 }
 
 model Department {
-  deptId   String              @id @unique @db.VarChar(30)
+  deptId   Int @id @unique @default(autoincrement())
   name     String              @db.VarChar(50)
-  compId   String
+  compId   Int
   company  Company             @relation(fields: [compId], references: [compId])
   users    User[]
   managers Department_Manager[]
 }
 
 model Department_Manager {
-  deptId     String
-  userId     String
+  deptId     Int
+  userId     Int
   department Department @relation(fields: [deptId], references: [deptId])
   user       User       @relation(fields: [userId], references: [userId])
 
@@ -70,8 +71,8 @@ model Department_Manager {
 }
 
 model User_Projects {
-  userId  String
-  projId  String
+  userId  Int
+  projId  Int
   role    ProjectRole
   user    User        @relation(fields: [userId], references: [userId])
   project Project     @relation(fields: [projId], references: [projId])
@@ -80,8 +81,8 @@ model User_Projects {
 }
 
 model User_Relations {
-  bossId         String
-  subordinatedId String
+  bossId         Int
+  subordinatedId Int
   relation       Relation
   boss           User     @relation("BossRelations", fields: [bossId], references: [userId])
   subordinated   User     @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
