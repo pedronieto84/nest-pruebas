@@ -1,7 +1,9 @@
 import { PrismaClient, Role, ProjectRole, Relation } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
-import { generateUUID } from './../src/helpers/helpers';
 
+
+import { auth } from './../src/firebase/firebaseAuth';
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +22,7 @@ async function main() {
         data: getCompanies(configObject.companies).map((company) => ({
             name: company
         })),
-        
+
     });
 
     // Cojo las ids de las comp created
@@ -47,7 +49,7 @@ async function main() {
     for (const comp of createdCompanies) {
         await prisma.department.createMany({
             data: getDepartments(configObject.departments).map((department) => ({
-                
+
                 name: department,
                 compId: comp.compId
             })),
@@ -71,17 +73,26 @@ async function main() {
             }
         });
 
+        // Creo el user en firebase
+
+
         // Creo todos los empleados de una compañía asignandoles a una compañía y departamneto aleatorio
+        const usersData = await Promise.all(
+            getNames(configObject.workers).map(async (name, index) => {
+                const firebaseUser = await createUserWithEmailAndPassword(auth, `${name.toLowerCase()}-${index}@${comp.name}.com`, '123456');
+                return {
+                    firebaseId: firebaseUser.user.uid,
+                    name: `${name} ${getSurnames(configObject.workers)[index]}`,
+                    compId: comp.compId,
+                    email: `${name.toLowerCase()}-${index}@${comp.name}.com`,
+                    role: index === 0 ? Role.OWNER : Role.WORKER, // First user is OWNER, rest are WORKER
+                    deptId: departmentsOfThisComp[Math.floor(Math.random() * departmentsOfThisComp.length)].deptId
+                };
+            })
+        );
 
         await prisma.user.createMany({
-            data: getNames(configObject.workers).map((name, index) => ({
-                firebaseId: generateUUID(),
-                name: `${name} ${getSurnames(configObject.workers)[index]}`,
-                compId: comp.compId,
-                email: `${name.toLowerCase()}-${index}@${comp.name}.com`,
-                role: index === 0 ? Role.OWNER : Role.WORKER, // First user is OWNER, rest are WORKER
-                deptId: departmentsOfThisComp[Math.floor(Math.random() * departmentsOfThisComp.length)].deptId
-            })),
+            data: usersData,
         });
 
         // Asigno a cada trabajador un proyecto aleatorio
@@ -114,7 +125,7 @@ async function main() {
 
 
             // Creo las relaciones entre trabajadores
-            if (index > 0 ) {
+            if (index > 0) {
                 await prisma.user_Relations.create({
                     data: {
                         bossId: worker.userId,
@@ -124,7 +135,7 @@ async function main() {
                 });
             }
 
-            if(index < workersOfThisComp.length - 1) {
+            if (index < workersOfThisComp.length - 1) {
                 await prisma.user_Relations.create({
                     data: {
                         bossId: worker.userId,
@@ -138,9 +149,10 @@ async function main() {
 
     }
     // Add a user with email "admin@company" and role "ADMIN" and no compId or projId or deptId
+    const adminFirebase = await createUserWithEmailAndPassword(auth, `pedro@admin.com`, '123456');
     await prisma.user.create({
         data: {
-            firebaseId: generateUUID(),
+            firebaseId: adminFirebase.user.uid,
             name: "Admin",
             email: `pedro@admin.com`,
             role: Role.ADMIN

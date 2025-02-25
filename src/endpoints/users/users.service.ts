@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 import { Role, Prisma, ProjectRole, Relation } from '@prisma/client'; // Import Prisma
-import { generateUUID } from '../../helpers/helpers'; // Updated import path
+
 
 import { auth } from '../../firebase/firebaseAuth'; // Import Firebase auth
 import {createUserWithEmailAndPassword } from "firebase/auth";
@@ -23,7 +23,7 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const firebaseId = (await createUserWithEmailAndPassword(auth, createUserDto.email, generateUUID())).user.uid // Firebase auth
+    const firebaseId = (await createUserWithEmailAndPassword(auth, createUserDto.email, '123456')).user.uid // Firebase auth
 
     const compId = createUserDto.compId;
 
@@ -48,11 +48,11 @@ export class UsersService {
         data: userToCreate,
       });
 
-      const projectUser = await prisma.user_Projects.create({
+      await prisma.user_Projects.create({
         data: { projId, userId: user.userId , role: ProjectRole.WORKER },
       });
 
-      const userRelation = await prisma.user_Relations.create({
+      await prisma.user_Relations.create({
         data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.VIEW },
       });
 
@@ -77,7 +77,7 @@ export class UsersService {
           email: createUserDto.email,
           name: createUserDto.name,
           role: Role.OWNER, 
-          firebaseId: (await createUserWithEmailAndPassword(auth, createUserDto.email, generateUUID())).user.uid // Firebase auth// Ensure valid Role enum value
+          firebaseId: (await createUserWithEmailAndPassword(auth, createUserDto.email,'123456')).user.uid // Firebase auth// Ensure valid Role enum value
           
         },
       });
