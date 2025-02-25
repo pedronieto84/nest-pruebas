@@ -43,7 +43,7 @@ export const surnames = [
     "Rossi", "Ferrari", "Bianchi", "Romano", "Conti"
 ];
 
-export const departments:string[] = [
+export const departments: string[] = [
     "Marketing Estratégico",
     "Contabilidad y Finanzas",
     "Innovación y Desarrollo",
@@ -54,9 +54,9 @@ export const departments:string[] = [
     "Recursos Humanos",
     "Investigación de Mercado",
     "Operaciones y Producción"
-  ];
+];
 
-  export const projects: string[] = [
+export const projects: string[] = [
     "Expansión Digital",
     "Optimización Financiera",
     "Nueva App Móvil",
@@ -67,4 +67,25 @@ export const departments:string[] = [
     "Análisis de Tendencias de Mercado",
     "Mejoras en la Atención al Cliente",
     "Seguridad Cibernética Avanzada"
-  ];
+];
+
+export const getCompanies = (amount: number = 5): string[] => {
+    return companies.slice(0, amount);
+};
+
+export const getNames = (amount: number = 5): string[] => {
+    return names.slice(0, amount);
+};
+
+export const getSurnames = (amount: number = 5): string[] => {
+    return surnames.slice(0, amount);
+};
+
+export const getDepartments = (amount: number = 5): string[] => {
+    return departments.slice(0, amount);
+};
+
+export const getProjects = (amount: number = 5): string[] => {
+    return projects.slice(0, amount);
+};
+
