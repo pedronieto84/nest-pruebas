@@ -1,9 +1,34 @@
-import * as admin from 'firebase-admin';
-import * as serviceAccount from './serviceAccountKey.json'; // Ensure you have the service account key file
+import { initializeApp } from "firebase/app";
+import { getAuth, connectAuthEmulator, createUserWithEmailAndPassword } from "firebase/auth";
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-    databaseURL: 'https://<your-database-name>.firebaseio.com' // Replace with your database URL
-});
+// Your Firebase config (same as production, emulator doesn't change this)
+const firebaseConfig = {
+    apiKey: "AIzaSyCjyOZEmNFaHvLyfI2o1z0Sm6-4Ewnninw",
+    authDomain: "worktocloud3.firebaseapp.com",
+    databaseURL: "https://worktocloud3.firebaseio.com",
+    projectId: "worktocloud3",
+    storageBucket: "worktocloud3.appspot.com",
+    messagingSenderId: "86490424552",
+    appId: "1:86490424552:web:515edc8fadf113d5"
+};
 
-export const auth = admin.auth();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔥 Connect to the Firebase Auth Emulator
+if (window.location.hostname === "localhost") {
+  connectAuthEmulator(auth, "http://localhost:9099");
+}
+
+async function createFirebaseUser(email: string, password: string) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        return userCredential.user;
+    } catch (error) {
+        console.error("Error creating Firebase user:", error);
+        throw error;
+    }
+}
+
+export { auth, createFirebaseUser };

@@ -6,6 +6,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, Prisma, ProjectRole, Relation } from '@prisma/client'; // Import Prisma
 import { generateUUID } from '../../helpers/helpers'; // Updated import path
 
+import { auth } from '../../firebase/firebaseAuth'; // Import Firebase auth
+import {createUserWithEmailAndPassword } from "firebase/auth";
+
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) { }
@@ -19,7 +23,7 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const firebaseId = generateUUID();  // Firebase auth
+    const firebaseId = createUserWithEmailAndPassword(auth, createUserDto.email, generateUUID()) // Firebase auth
 
     const compId = createUserDto.compId;
 
@@ -73,7 +77,7 @@ export class UsersService {
           email: createUserDto.email,
           name: createUserDto.name,
           role: Role.OWNER, 
-          firebaseId: generateUUID() // Ensure valid Role enum value
+          firebaseId: (await createUserWithEmailAndPassword(auth, createUserDto.email, generateUUID())).user.uid // Firebase auth// Ensure valid Role enum value
           
         },
       });
