@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsEnum, IsOptional, ValidateIf } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional, ValidateIf, MaxLength, MinLength } from 'class-validator';
 import { Role } from '@prisma/client';
 
 export class CreateUserDto {
@@ -11,15 +11,21 @@ export class CreateUserDto {
     @IsEnum(Role)
     role: Role;
 
-    @ValidateIf(o => o.role === Role.WORKER)
+    @IsOptional()
     @IsString()
-    compId: string;
+    @MaxLength(30)
+    @MinLength(17)
+    firebaseId?: string;
 
     @ValidateIf(o => o.role === Role.WORKER)
     @IsString()
-    deptId: string;
+    compId: number;
 
     @ValidateIf(o => o.role === Role.WORKER)
     @IsString()
-    projId: string;
+    deptId: number;
+
+    @ValidateIf(o => o.role === Role.WORKER)
+    @IsString()
+    projId: number;
 }

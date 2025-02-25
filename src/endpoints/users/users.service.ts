@@ -19,7 +19,7 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const userId = generateUUID();  // Firebase auth
+    const firebaseId = generateUUID();  // Firebase auth
 
     const compId = createUserDto.compId;
 
@@ -34,7 +34,7 @@ export class UsersService {
       email: createUserDto.email,
       name: createUserDto.name,
       role: Role.WORKER, // Ensure valid Role enum value
-      userId: userId,
+      firebaseId,
       deptId: deptId,
       compId: compId
     };
@@ -45,11 +45,11 @@ export class UsersService {
       });
 
       const projectUser = await prisma.user_Projects.create({
-        data: { projId, userId, role: ProjectRole.WORKER },
+        data: { projId, userId: user.userId , role: ProjectRole.WORKER },
       });
 
       const userRelation = await prisma.user_Relations.create({
-        data: { bossId: userId, subordinatedId: userId, relation: Relation.VIEW },
+        data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.VIEW },
       });
 
       return { userId: user.userId, email: user.email, name: user.name };
@@ -65,85 +65,48 @@ export class UsersService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const userId = generateUUID(); // Aqui tendre que hacer el Firebase auth
-    const departmentId = generateUUID();
-    const projectId = generateUUID();
-
-    const userToCreate = {
-      email: createUserDto.email,
-      name: createUserDto.name,
-      role: Role.OWNER, // Ensure valid Role enum value
-      userId: userId,
-    };
-
-    const companyToCreate = {
-      name: createUserDto.name,
-      compId: userId,
-    };
-
-    const departmentToCreate = {
-      name: createUserDto.name,
-      deptId: departmentId,
-      compId: userId,
-    };
-
-    const departmentManagerToCreate = {
-      deptId: departmentId,
-      userId: userId,
-    };
-
-    const projectToCreate = {
-      name: createUserDto.name,
-      projId: projectId,
-      compId: userId,
-    };
-
-    const projectUserToCreate = {
-      projId: projectId,
-      userId: userId,
-      role: ProjectRole.BOSS,
-    };
-
-    const userRelationToCreate = {
-      bossId: userId,
-      subordinatedId: userId,
-      relation: Relation.EDIT,
-    };
+ 
 
     return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
       const user = await prisma.user.create({
-        data: userToCreate,
+        data: {
+          email: createUserDto.email,
+          name: createUserDto.name,
+          role: Role.OWNER, 
+          firebaseId: generateUUID() // Ensure valid Role enum value
+          
+        },
       });
 
       const company = await prisma.company.create({
-        data: companyToCreate,
+        data: { name: createUserDto.name },
       });
 
       const department = await prisma.department.create({
-        data: departmentToCreate,
+        data: {name: createUserDto.name, compId: company.compId},
       });
 
-      const departmentManager = await prisma.department_Manager.create({
-        data: departmentManagerToCreate,
+      await prisma.department_Manager.create({
+        data: { userId: user.userId, deptId: department.deptId },
       });
 
       const project = await prisma.project.create({
-        data: projectToCreate,
+        data: {name: createUserDto.name, compId: company.compId },
       });
 
-      const projectUser = await prisma.user_Projects.create({
-        data: projectUserToCreate,
+      await prisma.user_Projects.create({
+        data: { projId: project.projId, userId: user.userId, role: ProjectRole.BOSS },
       });
 
-      const userRelation = await prisma.user_Relations.create({
-        data: userRelationToCreate,
+      await prisma.user_Relations.create({
+        data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.EDIT },
       });
 
       await prisma.user.update({
-        where: { userId: userId },
+        where: { userId: user.userId },
         data: {
-          compId: userId,
-          deptId: departmentId,
+          compId: company.compId,
+          deptId: department.deptId,
         },
       });
 
@@ -155,7 +118,7 @@ export class UsersService {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { userId: id }
     })
@@ -164,7 +127,7 @@ export class UsersService {
     throw new HttpException("User does not exist", HttpStatus.NOT_FOUND);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     // Primero cargamos el usuario previo, para ver si existe
     const user = await this.prisma.user.findUnique({
       where: { userId: id }
@@ -189,7 +152,7 @@ export class UsersService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { userId: id },
       include: {
