@@ -18,10 +18,9 @@ const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // E
 async function main() {
     await prisma.company.createMany({
         data: getCompanies(configObject.companies).map((company) => ({
-            compId: generateUUID(),
             name: company
         })),
-        skipDuplicates: true
+        
     });
 
     // Cojo las ids de las comp created
@@ -38,7 +37,6 @@ async function main() {
     for (const comp of createdCompanies) {
         await prisma.project.createMany({
             data: getProjects(configObject.projects).map((project) => ({
-                projId: generateUUID(),
                 name: project,
                 compId: comp.compId
             })),
@@ -49,7 +47,7 @@ async function main() {
     for (const comp of createdCompanies) {
         await prisma.department.createMany({
             data: getDepartments(configObject.departments).map((department) => ({
-                deptId: generateUUID(),
+                
                 name: department,
                 compId: comp.compId
             })),
@@ -77,7 +75,7 @@ async function main() {
 
         await prisma.user.createMany({
             data: getNames(configObject.workers).map((name, index) => ({
-                userId: generateUUID(),
+                firebaseId: generateUUID(),
                 name: `${name} ${getSurnames(configObject.workers)[index]}`,
                 compId: comp.compId,
                 email: `${name.toLowerCase()}-${index}@${comp.name}.com`,
@@ -142,7 +140,7 @@ async function main() {
     // Add a user with email "admin@company" and role "ADMIN" and no compId or projId or deptId
     await prisma.user.create({
         data: {
-            userId: generateUUID(),
+            firebaseId: generateUUID(),
             name: "Admin",
             email: `pedro@admin.com`,
             role: Role.ADMIN
