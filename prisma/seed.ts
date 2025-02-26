@@ -188,6 +188,7 @@ async function main() {
                     // cada record, debo saber si es el primero o el ultimo
                     let start = false;
                     let end = false;
+
                     if (recordIndex === 0) start = true
                     if (recordIndex === shift.length - 1) end = true  // todavia no pongo aqui el stop
                     const startDate = moment(date, 'DD-MM-YYYY').toDate();
@@ -195,12 +196,12 @@ async function main() {
                     const objectToInsert = {
                         userId: combination.userId,
                         projId: combination.projId,
-                        start: startDate,
+                        seconds: start ? 0 : getRandomNumber(0, 800),
+                        start: firstStart,
                         end: endDate,
                         keyboard: start ? 0 : getRandomNumber(100, 1000),
                         mouseMove: start ? 0 : getRandomNumber(100, 10000),
                         mouseClicks: start ? 0 : getRandomNumber(100, 3000),
-                        seconds: start ? 0 : getRandomNumber(0, 800),
                         existe: Math.random() > 0.05 ? true : false
                     }
 
