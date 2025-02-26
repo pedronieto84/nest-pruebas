@@ -8,6 +8,7 @@ import { DepartmentsModule } from './endpoints/departments/departments.module';
 import { UsersModule } from './endpoints/users/users.module';
 import { ProjectsModule } from './endpoints/projects/projects.module';
 import { CompaniesModule } from './endpoints/companies/companies.module';
+import { RecordsModule } from './endpoints/records/records.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CompaniesModule } from './endpoints/companies/companies.module';
     UsersModule,
     ProjectsModule,
     CompaniesModule,
+    RecordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
