@@ -163,13 +163,13 @@ async function main() {
     const dates = generateRandomDates(configObject.daysWorked);
     console.log(dates);
 
-    combinations.forEach(async (combination) => {
+    combinations.forEach(async (combination, combinationIndex) => {
 
         // Aqui estoy dentro de una combinacion projId - userId
         for (const date of dates) {
             // Aqui estoy iterando en las fechas "dd-mm-yyyy"
             // Dentro de un dia /projecto/usuario tengo que volver a iterar para insertar entre 10 y 40 registros
-            const numberOfShifts = getRandomNumber(1,configObject.maximumShifts)
+            const numberOfShifts = getRandomNumber(1, configObject.maximumShifts)
             const numberOfRecords = getRandomNumber(10, configObject.recordsPerDay);
 
             // Crear un array de números incrementales con numberOfRecords y con subdivisiones en función del número de shifts
@@ -178,13 +178,14 @@ async function main() {
             const recordsPerShift = Math.round(numberOfRecords / numberOfShifts)
 
             const arrayOfShiftsRecords = shiftArrayGenerator(numberOfShifts, Array.from({ length: numberOfRecords }, (_, i) => i + 1))
-            
+
 
             for (const shift of arrayOfShiftsRecords) {
                 // Aqui estoy dentro de un shift
-                for (const record of shift) {
+                for (const [recordIndex, record] of shift.entries()) {
                     // cada record, debo saber si es el primero o el ultimo
-
+                    let start = false;
+                    if (recordIndex === 0) { start = true }
                     const startDate = moment(date, 'DD-MM-YYYY').toDate();
                     const endDate = moment(date, 'DD-MM-YYYY').toDate();
                     await prisma.records.create({
@@ -193,16 +194,16 @@ async function main() {
                             projId: combination.projId,
                             start: startDate,
                             end: endDate,
-                            keyboard: getRandomNumber(100, 1000),
-                            mouseMove: getRandomNumber(100, 10000),
-                            mouseClicks: getRandomNumber(100, 3000),
-                            seconds: getRandomNumber(0, 800),
+                            keyboard: start ? 0 : getRandomNumber(100, 1000),
+                            mouseMove: start ? 0 : getRandomNumber(100, 10000),
+                            mouseClicks: start ? 0 : getRandomNumber(100, 3000),
+                            seconds: start ? 0 : getRandomNumber(0, 800),
                             existe: Math.random() > 0.05 ? true : false
                         }
                     });
                 }
             }
-           
+
 
             const startDate = moment(date, 'DD-MM-YYYY').toDate();
             const endDate = moment(date, 'DD-MM-YYYY').toDate();
