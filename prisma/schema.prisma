@@ -104,6 +104,7 @@ model Records {
   mouseClicks Int
   seconds     Int
   day         String
+  time       String
   visible      Boolean // Ensure the column `existe` is defined
   position    RecordPosition
   user        User           @relation(fields: [userId], references: [userId])

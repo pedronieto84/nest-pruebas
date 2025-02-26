@@ -6,18 +6,17 @@ import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class RecordsService {
 
- constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) { }
 
   create(createRecordDto: CreateRecordDto) {
     return 'This action adds a new record';
   }
 
-  findAll(params: {  userId: number, day: string }) {
+  findAll(params: { userId: number, day: string }) {
     const { userId, day } = params;
-    // Implement the logic to handle the parameters and return the records
-    // Example:
     return this.prisma.records.findMany({
-      where: {  userId, day }
+      where: { userId, day },
+      orderBy: { start: 'asc' }
     });
   }
 

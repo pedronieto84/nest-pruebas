@@ -162,8 +162,10 @@ async function main() {
     // Generar Array de Días
     const dates = generateRandomDates(configObject.daysWorked);
     console.log(dates);
-
+    const arrayFinalToInsert = []
     combinations.forEach(async (combination, combinationIndex) => {
+
+
 
         // Aqui estoy dentro de una combinacion projId - userId
         for (const date of dates) {
@@ -178,7 +180,7 @@ async function main() {
 
             const arrayOfShiftsRecords = shiftArrayGenerator(numberOfShifts, Array.from({ length: numberOfRecords }, (_, i) => i + 1))
 
-            let firstStart = moment(date, 'DD-MM-YYYY').set({ hour: getRandomNumber(8, 10), minute: getRandomNumber(1, 60) }).toDate();
+            let firstStart = moment(date, 'DD-MM-YYYY').add(9, 'hours').toDate();
             let secondsTracked = 0
 
             for (const shift of arrayOfShiftsRecords) {
@@ -190,8 +192,8 @@ async function main() {
 
                     if (recordIndex === 0) start = true
                     if (recordIndex === shift.length - 1) end = true  // todavia no pongo aqui el stop
-                    const startDate = start ? firstStart : moment(date, 'DD-MM-YYYY').toDate();
-                    const secondsOfThisObject = start ? 0 : getRandomNumber(0, 800)
+                    const startDate = start ? firstStart : moment(firstStart).toDate();
+                    const secondsOfThisObject = start ? 0 : 600//getRandomNumber(600, 800)
                     const endDate = moment(startDate).add(secondsOfThisObject, 'seconds').toDate();
                     const objectToInsert = {
                         userId: combination.userId,
@@ -199,6 +201,7 @@ async function main() {
                         seconds: secondsOfThisObject,
                         start: startDate,
                         end: endDate,
+                        time: moment(startDate).format('HH:mm:ss'),
                         day: moment(startDate).format('DD-MM-YYYY'),
                         position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
                         keyboard: start ? 0 : getRandomNumber(100, 1000),
@@ -207,27 +210,29 @@ async function main() {
                         visible: Math.random() > 0.05 ? true : false // Ensure the field name matches the schema
                     }
 
-                    secondsTracked += objectToInsert.seconds;
-
-                    await prisma.records.create({
-                        data: objectToInsert
-                    });
+                    secondsTracked = objectToInsert.seconds;
+                    arrayFinalToInsert.push(objectToInsert);
+                    // await prisma.records.create({
+                    //     data: objectToInsert
+                    // });
                     // Si es el final reseteo el secondsTracked
                     if (end) {
-                        firstStart = moment(objectToInsert.end).add(secondsTracked + getRandomNumber(100, 400)).toDate();
+                        firstStart = moment(objectToInsert.end).add(getRandomNumber(100, 400), 'seconds').toDate();
                         secondsTracked = 0
                     } else {
                         // Solamente 4 segundos de diferencia
-                        firstStart = moment(objectToInsert.end).add(secondsTracked + getRandomNumber(1, 4)).toDate();
+                        firstStart = moment(objectToInsert.end).add(getRandomNumber(1, 4), 'seconds').toDate();
                     }
                 }
             }
-
-
-
-
         }
+
     })
+    await prisma.records.createMany({
+        data: arrayFinalToInsert
+    })
+
+    console.log(arrayFinalToInsert);
 
 }
 
