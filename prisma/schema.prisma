@@ -103,6 +103,7 @@ model Records {
   mouseMove   Int
   mouseClicks Int
   seconds     Int
+  day         String
   visible      Boolean // Add the column `existe`
   position    RecordPosition
    // Add the column `timeRange`

@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
 
 @Controller('records')
 export class RecordsController {
-  constructor(private readonly recordsService: RecordsService) {}
+  constructor(private readonly recordsService: RecordsService) { }
 
   @Post()
   create(@Body() createRecordDto: CreateRecordDto) {
@@ -13,8 +13,8 @@ export class RecordsController {
   }
 
   @Get()
-  findAll() {
-    return this.recordsService.findAll();
+  findAll( @Query('userId') userId: string, @Query('day') day: string) {
+    return this.recordsService.findAll({  userId, day });
   }
 
   @Get(':id')

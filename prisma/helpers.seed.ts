@@ -10,7 +10,8 @@ interface Record {
     mouseMove: number
     mouseClicks: number
     seconds: number
-    existe: Boolean // Add the column `existe`
+    day: String // Add the column `existe`
+    visible: boolean
 
 }
 

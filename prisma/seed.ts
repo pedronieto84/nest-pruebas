@@ -199,6 +199,7 @@ async function main() {
                         seconds: secondsOfThisObject,
                         start: startDate,
                         end: endDate,
+                        day: moment(startDate).format('DD-MM-YYYY'),
                         position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
                         keyboard: start ? 0 : getRandomNumber(100, 1000),
                         mouseMove: start ? 0 : getRandomNumber(100, 10000),
