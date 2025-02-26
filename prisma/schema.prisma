@@ -103,7 +103,7 @@ model Records {
   mouseMove   Int
   mouseClicks Int
   seconds     Int
-  existe      Boolean // Add the column `existe`
+  visible      Boolean // Add the column `existe`
   position    RecordPosition
    // Add the column `timeRange`
   user        User           @relation(fields: [userId], references: [userId])
