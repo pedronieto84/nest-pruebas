@@ -1,7 +1,9 @@
 import { PrismaClient, Role, ProjectRole, Relation } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
 
-import { auth , createFirebaseUser} from './../src/firebase/firebaseAuth';
+import { auth, createFirebaseUser } from './../src/firebase/firebaseAuth';
+import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./helpers.seed";
+import * as moment from 'moment';
 
 const prisma = new PrismaClient();
 
@@ -9,7 +11,11 @@ const configObject = {
     companies: 2,
     workers: 5,
     departments: 2,
-    projects: 2
+    projects: 2,
+    daysWorked: 20,
+    recordsPerDay: 40,
+    maximumShifts: 4
+
 }
 
 const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles match the Enum values
@@ -147,6 +153,75 @@ async function main() {
             role: Role.ADMIN
         }
     });
+
+    // Tengo que crear los records
+
+    // Necesito generar un array con el formato "projId" - "userId"
+    const combinations = await prisma.user_Projects.findMany()
+
+    // Generar Array de Días
+    const dates = generateRandomDates(configObject.daysWorked);
+    console.log(dates);
+
+    combinations.forEach(async (combination) => {
+
+        // Aqui estoy dentro de una combinacion projId - userId
+        for (const date of dates) {
+            // Aqui estoy iterando en las fechas "dd-mm-yyyy"
+            // Dentro de un dia /projecto/usuario tengo que volver a iterar para insertar entre 10 y 40 registros
+            const numberOfShifts = getRandomNumber(1,configObject.maximumShifts)
+            const numberOfRecords = getRandomNumber(10, configObject.recordsPerDay);
+
+            // Crear un array de números incrementales con numberOfRecords y con subdivisiones en función del número de shifts
+            // Por ejemplo, si tengo [[1,2,3,4], [5,6,7,8], [9,10,11,12]] y numberOfShifts = 3
+            // Entonces, cada subarray corresponderá a un shift
+            const recordsPerShift = Math.round(numberOfRecords / numberOfShifts)
+
+            const arrayOfShiftsRecords = shiftArrayGenerator(numberOfShifts, Array.from({ length: numberOfRecords }, (_, i) => i + 1))
+            
+
+            for (const shift of arrayOfShiftsRecords) {
+                // Aqui estoy dentro de un shift
+                for (const record of shift) {
+                    // cada record, debo saber si es el primero o el ultimo
+
+                    const startDate = moment(date, 'DD-MM-YYYY').toDate();
+                    const endDate = moment(date, 'DD-MM-YYYY').toDate();
+                    await prisma.records.create({
+                        data: {
+                            userId: combination.userId,
+                            projId: combination.projId,
+                            start: startDate,
+                            end: endDate,
+                            keyboard: getRandomNumber(100, 1000),
+                            mouseMove: getRandomNumber(100, 10000),
+                            mouseClicks: getRandomNumber(100, 3000),
+                            seconds: getRandomNumber(0, 800),
+                            existe: Math.random() > 0.05 ? true : false
+                        }
+                    });
+                }
+            }
+           
+
+            const startDate = moment(date, 'DD-MM-YYYY').toDate();
+            const endDate = moment(date, 'DD-MM-YYYY').toDate();
+            await prisma.records.create({
+                data: {
+                    userId: combination.userId,
+                    projId: combination.projId,
+                    start: startDate,
+                    end: endDate,
+                    keyboard: getRandomNumber(100, 1000),
+                    mouseMove: getRandomNumber(100, 10000),
+                    mouseClicks: getRandomNumber(100, 3000),
+                    seconds: getRandomNumber(0, 800),
+                    existe: Math.random() > 0.05 ? true : false
+                }
+            });
+        }
+    })
+
 }
 
 main()

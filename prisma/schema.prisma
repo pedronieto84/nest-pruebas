@@ -94,18 +94,18 @@ model User_Relations {
 }
 
 model Records {
-  recordId     Int      @id @unique @default(autoincrement())
-  userId       Int
-  projId       Int
-  start        DateTime
-  end          DateTime
-  keyboard     Int
-  mouseMove    Int
-  mouseClicks  Int
-  seconds      Int
-  existe       Boolean  // Add the column `existe`
-  user         User     @relation(fields: [userId], references: [userId])
-  project      Project  @relation(fields: [projId], references: [projId])
+  recordId    Int      @id @unique @default(autoincrement())
+  userId      Int
+  projId      Int
+  start       DateTime
+  end         DateTime
+  keyboard    Int
+  mouseMove   Int
+  mouseClicks Int
+  seconds     Int
+  existe      Boolean // Add the column `existe`
+  user        User     @relation(fields: [userId], references: [userId])
+  project     Project  @relation(fields: [projId], references: [projId])
 }
 
 enum Role {
