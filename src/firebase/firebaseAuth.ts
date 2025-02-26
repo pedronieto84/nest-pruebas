@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 // Your Firebase config (same as production, emulator doesn't change this)
 const firebaseConfig = {
@@ -15,9 +16,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const firestore = getFirestore(app);
 
 // 🔥 Connect to the Firebase Auth Emulator
 connectAuthEmulator(auth, "http://localhost:9099");
+
+// 🔥 Connect to the Firestore Emulator
+connectFirestoreEmulator(firestore, "localhost", 8081); // Updated port to 8081
 
 async function createFirebaseUser(email: string, password: string = '123456') {
     try {
@@ -29,4 +34,4 @@ async function createFirebaseUser(email: string, password: string = '123456') {
     }
 }
 
-export { auth, createFirebaseUser };
+export { auth, firestore, createFirebaseUser };

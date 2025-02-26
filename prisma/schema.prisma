@@ -14,12 +14,12 @@ datasource db {
 }
 
 model User {
-  userId Int @id @unique @default(autoincrement())
-  firebaseId String @unique @db.VarChar(30)
-  name   String @db.VarChar(50)
-  email  String @unique @db.VarChar(50)
-  role   Role   @default(WORKER)
-  compId    Int?          
+  userId     Int         @id @unique @default(autoincrement())
+  firebaseId String      @unique @db.VarChar(30)
+  name       String      @db.VarChar(50)
+  email      String      @unique @db.VarChar(50)
+  role       Role        @default(WORKER)
+  compId     Int?
   company    Company?    @relation(fields: [compId], references: [compId]) // Relación opcional con el modelo Company
   projects   Project[]   @relation("UserProjects")
   department Department? @relation(fields: [deptId], references: [deptId])
@@ -31,11 +31,12 @@ model User {
   boss_relations User_Relations[] @relation("BossRelations")
 
   worker_relations User_Relations[] @relation("SubordinatedRelations")
-  
+
+  Records Records[]
 }
 
 model Company {
-  compId      Int @id @unique @default(autoincrement())
+  compId      Int          @id @unique @default(autoincrement())
   name        String       @db.VarChar(50)
   projects    Project[]
   departments Department[]
@@ -43,20 +44,22 @@ model Company {
 }
 
 model Project {
-  projId        Int @id @unique @default(autoincrement())
+  projId        Int             @id @unique @default(autoincrement())
   name          String          @db.VarChar(50)
   compId        Int
   settings      String?
   company       Company         @relation(fields: [compId], references: [compId])
   users         User[]          @relation("UserProjects")
   user_Projects User_Projects[]
+
+  Records Records[]
 }
 
 model Department {
-  deptId   Int @id @unique @default(autoincrement())
-  name     String              @db.VarChar(50)
+  deptId   Int                  @id @unique @default(autoincrement())
+  name     String               @db.VarChar(50)
   compId   Int
-  company  Company             @relation(fields: [compId], references: [compId])
+  company  Company              @relation(fields: [compId], references: [compId])
   users    User[]
   managers Department_Manager[]
 }
@@ -88,6 +91,20 @@ model User_Relations {
   subordinated   User     @relation("SubordinatedRelations", fields: [subordinatedId], references: [userId])
 
   @@id([bossId, subordinatedId])
+}
+
+model Records {
+  recordId    Int      @id @unique @default(autoincrement())
+  userId      Int
+  projId      Int
+  start       DateTime
+  end         DateTime
+  keyboard    Int
+  mouseMove   Int
+  mouseClicks Int
+  seconds     Int
+  user        User     @relation(fields: [userId], references: [userId])
+  project     Project  @relation(fields: [projId], references: [projId])
 }
 
 enum Role {
