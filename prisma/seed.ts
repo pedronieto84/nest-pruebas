@@ -182,7 +182,7 @@ async function main() {
 
             for (const shift of arrayOfShiftsRecords) {
                 // Aqui estoy dentro de un shift
-                let firstStart = moment(date, 'DD-MM-YYYY').set({ hour: getRandomNumber(8,10), minute: getRandomNumber(1,60) }).toDate();
+                let firstStart = moment(date, 'DD-MM-YYYY').set({ hour: getRandomNumber(8, 10), minute: getRandomNumber(1, 60) }).toDate();
                 let secondsTracked = 0
                 for (const [recordIndex, record] of shift.entries()) {
                     // cada record, debo saber si es el primero o el ultimo
@@ -191,13 +191,14 @@ async function main() {
 
                     if (recordIndex === 0) start = true
                     if (recordIndex === shift.length - 1) end = true  // todavia no pongo aqui el stop
-                    const startDate = moment(date, 'DD-MM-YYYY').toDate();
-                    const endDate = moment(date, 'DD-MM-YYYY').toDate();
+                    const startDate = start ? firstStart : moment(date, 'DD-MM-YYYY').toDate();
+                    const secondsOfThisObject = start ? 0 : getRandomNumber(0, 800)
+                    const endDate = moment(startDate).add(secondsOfThisObject, 'seconds').toDate();
                     const objectToInsert = {
                         userId: combination.userId,
                         projId: combination.projId,
-                        seconds: start ? 0 : getRandomNumber(0, 800),
-                        start: firstStart,
+                        seconds: secondsOfThisObject,
+                        start: startDate,
                         end: endDate,
                         keyboard: start ? 0 : getRandomNumber(100, 1000),
                         mouseMove: start ? 0 : getRandomNumber(100, 10000),
@@ -212,15 +213,18 @@ async function main() {
                     });
                     // Si es el final reseteo el secondsTracked
                     if (end) {
+                        firstStart = moment(objectToInsert.end).add(secondsTracked + getRandomNumber(100, 400)).toDate();
                         secondsTracked = 0
-
+                    } else {
+                        // Solamente 4 segundos de diferencia
+                        firstStart = moment(objectToInsert.end).add(secondsTracked + getRandomNumber(1, 4)).toDate();
                     }
                 }
             }
 
 
-         
-        
+
+
         }
     })
 
