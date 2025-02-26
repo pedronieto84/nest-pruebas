@@ -1,4 +1,4 @@
-import { PrismaClient, Role, ProjectRole, Relation } from "@prisma/client";
+import { PrismaClient, Role, ProjectRole, Relation, RecordPosition } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
 
 import { auth, createFirebaseUser } from './../src/firebase/firebaseAuth';
@@ -167,7 +167,7 @@ async function main() {
 
         // Aqui estoy dentro de una combinacion projId - userId
         for (const date of dates) {
-            // Aqui estoy iterando en las fechas "dd-mm-yyyy"
+            // Aqui estoy iterando en las fechas "dd-mm-yyyy" / projId / userId
             // Dentro de un dia /projecto/usuario tengo que volver a iterar para insertar entre 10 y 40 registros
             const numberOfShifts = getRandomNumber(1, configObject.maximumShifts)
             const numberOfRecords = getRandomNumber(10, configObject.recordsPerDay);
@@ -175,15 +175,14 @@ async function main() {
             // Crear un array de números incrementales con numberOfRecords y con subdivisiones en función del número de shifts
             // Por ejemplo, si tengo [[1,2,3,4], [5,6,7,8], [9,10,11,12]] y numberOfShifts = 3
             // Entonces, cada subarray corresponderá a un shift
-            const recordsPerShift = Math.round(numberOfRecords / numberOfShifts)
 
             const arrayOfShiftsRecords = shiftArrayGenerator(numberOfShifts, Array.from({ length: numberOfRecords }, (_, i) => i + 1))
 
+            let firstStart = moment(date, 'DD-MM-YYYY').set({ hour: getRandomNumber(8, 10), minute: getRandomNumber(1, 60) }).toDate();
+            let secondsTracked = 0
 
             for (const shift of arrayOfShiftsRecords) {
                 // Aqui estoy dentro de un shift
-                let firstStart = moment(date, 'DD-MM-YYYY').set({ hour: getRandomNumber(8, 10), minute: getRandomNumber(1, 60) }).toDate();
-                let secondsTracked = 0
                 for (const [recordIndex, record] of shift.entries()) {
                     // cada record, debo saber si es el primero o el ultimo
                     let start = false;
@@ -200,6 +199,7 @@ async function main() {
                         seconds: secondsOfThisObject,
                         start: startDate,
                         end: endDate,
+                        position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
                         keyboard: start ? 0 : getRandomNumber(100, 1000),
                         mouseMove: start ? 0 : getRandomNumber(100, 10000),
                         mouseClicks: start ? 0 : getRandomNumber(100, 3000),

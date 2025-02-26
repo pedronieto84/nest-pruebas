@@ -94,7 +94,7 @@ model User_Relations {
 }
 
 model Records {
-  recordId    Int      @id @unique @default(autoincrement())
+  recordId    Int            @id @unique @default(autoincrement())
   userId      Int
   projId      Int
   start       DateTime
@@ -104,8 +104,10 @@ model Records {
   mouseClicks Int
   seconds     Int
   existe      Boolean // Add the column `existe`
-  user        User     @relation(fields: [userId], references: [userId])
-  project     Project  @relation(fields: [projId], references: [projId])
+  position    RecordPosition
+   // Add the column `timeRange`
+  user        User           @relation(fields: [userId], references: [userId])
+  project     Project        @relation(fields: [projId], references: [projId])
 }
 
 enum Role {
@@ -122,4 +124,10 @@ enum ProjectRole {
 enum Relation {
   VIEW
   EDIT
+}
+
+enum RecordPosition {
+  START
+  END
+  MIDDLE
 }
