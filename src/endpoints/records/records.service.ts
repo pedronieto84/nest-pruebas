@@ -12,7 +12,7 @@ export class RecordsService {
     return 'This action adds a new record';
   }
 
-  findAll(params: {  userId: string, day: string }) {
+  findAll(params: {  userId: number, day: string }) {
     const { userId, day } = params;
     // Implement the logic to handle the parameters and return the records
     // Example:

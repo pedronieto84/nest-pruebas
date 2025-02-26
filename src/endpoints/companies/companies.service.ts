@@ -27,7 +27,7 @@ export class CompaniesService {
 
   findOne(id: string) {
     return this.prisma.company.findUnique({
-      where: { compId: id }
+      where: { compId: +id }
     });
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
@@ -12,9 +12,10 @@ export class RecordsController {
     return this.recordsService.create(createRecordDto);
   }
 
-  @Get()
-  findAll( @Query('userId') userId: string, @Query('day') day: string) {
-    return this.recordsService.findAll({  userId, day });
+  @Get(':userId/:day')
+  findAll(@Param('userId') userId: string, @Param('day') day: string) {
+    console.log(userId, day);
+    return this.recordsService.findAll({ userId: +userId, day });
   }
 
   @Get(':id')
