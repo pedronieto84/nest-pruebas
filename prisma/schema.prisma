@@ -104,9 +104,8 @@ model Records {
   mouseClicks Int
   seconds     Int
   day         String
-  visible      Boolean // Add the column `existe`
+  visible      Boolean // Ensure the column `existe` is defined
   position    RecordPosition
-   // Add the column `timeRange`
   user        User           @relation(fields: [userId], references: [userId])
   project     Project        @relation(fields: [projId], references: [projId])
 }

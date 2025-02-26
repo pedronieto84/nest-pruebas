@@ -204,7 +204,7 @@ async function main() {
                         keyboard: start ? 0 : getRandomNumber(100, 1000),
                         mouseMove: start ? 0 : getRandomNumber(100, 10000),
                         mouseClicks: start ? 0 : getRandomNumber(100, 3000),
-                        visible: Math.random() > 0.05 ? true : false
+                        visible: Math.random() > 0.05 ? true : false // Ensure the field name matches the schema
                     }
 
                     secondsTracked += objectToInsert.seconds;
