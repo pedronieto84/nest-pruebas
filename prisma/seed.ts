@@ -182,46 +182,44 @@ async function main() {
 
             for (const shift of arrayOfShiftsRecords) {
                 // Aqui estoy dentro de un shift
+                let firstStart = moment(date, 'DD-MM-YYYY').set({ hour: getRandomNumber(8,10), minute: getRandomNumber(1,60) }).toDate();
+                let secondsTracked = 0
                 for (const [recordIndex, record] of shift.entries()) {
                     // cada record, debo saber si es el primero o el ultimo
                     let start = false;
                     let end = false;
-                    if (recordIndex === 0) { start = true }
-                    if(recordIndex === shift.length - 1) { end = true } // todavia no pongo aqui el stop
+                    if (recordIndex === 0) start = true
+                    if (recordIndex === shift.length - 1) end = true  // todavia no pongo aqui el stop
                     const startDate = moment(date, 'DD-MM-YYYY').toDate();
                     const endDate = moment(date, 'DD-MM-YYYY').toDate();
+                    const objectToInsert = {
+                        userId: combination.userId,
+                        projId: combination.projId,
+                        start: startDate,
+                        end: endDate,
+                        keyboard: start ? 0 : getRandomNumber(100, 1000),
+                        mouseMove: start ? 0 : getRandomNumber(100, 10000),
+                        mouseClicks: start ? 0 : getRandomNumber(100, 3000),
+                        seconds: start ? 0 : getRandomNumber(0, 800),
+                        existe: Math.random() > 0.05 ? true : false
+                    }
+
+                    secondsTracked += objectToInsert.seconds;
+
                     await prisma.records.create({
-                        data: {
-                            userId: combination.userId,
-                            projId: combination.projId,
-                            start: startDate,
-                            end: endDate,
-                            keyboard: start ? 0 : getRandomNumber(100, 1000),
-                            mouseMove: start ? 0 : getRandomNumber(100, 10000),
-                            mouseClicks: start ? 0 : getRandomNumber(100, 3000),
-                            seconds: start ? 0 : getRandomNumber(0, 800),
-                            existe: Math.random() > 0.05 ? true : false
-                        }
+                        data: objectToInsert
                     });
+                    // Si es el final reseteo el secondsTracked
+                    if (end) {
+                        secondsTracked = 0
+
+                    }
                 }
             }
 
 
-            const startDate = moment(date, 'DD-MM-YYYY').toDate();
-            const endDate = moment(date, 'DD-MM-YYYY').toDate();
-            await prisma.records.create({
-                data: {
-                    userId: combination.userId,
-                    projId: combination.projId,
-                    start: startDate,
-                    end: endDate,
-                    keyboard: getRandomNumber(100, 1000),
-                    mouseMove: getRandomNumber(100, 10000),
-                    mouseClicks: getRandomNumber(100, 3000),
-                    seconds: getRandomNumber(0, 800),
-                    existe: Math.random() > 0.05 ? true : false
-                }
-            });
+         
+        
         }
     })
 
