@@ -185,7 +185,9 @@ async function main() {
                 for (const [recordIndex, record] of shift.entries()) {
                     // cada record, debo saber si es el primero o el ultimo
                     let start = false;
+                    let end = false;
                     if (recordIndex === 0) { start = true }
+                    if(recordIndex === shift.length - 1) { end = true } // todavia no pongo aqui el stop
                     const startDate = moment(date, 'DD-MM-YYYY').toDate();
                     const endDate = moment(date, 'DD-MM-YYYY').toDate();
                     await prisma.records.create({
