@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:reset": "prisma migrate reset --force",
     "firebase:start": "firebase emulators:start",
-    "start:setup": "npm run start:docker && npm run firebase:start && npm run prisma:reset && npm run prisma:studio && npm run start:dev",
+    "start:setup": "npm run start:docker && npm run firebase:start" ,
+    "start:seed":"npm run prisma:reset && npm run prisma:studio && npm run start:dev",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
