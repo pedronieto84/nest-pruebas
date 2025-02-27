@@ -18,12 +18,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "firebase:start": "firebase emulators:start",
-    "start:setup": "npm run start:docker && npm run firebase:start",
+    "start:setup": "npm run start:docker && firebase emulators:start && npm run start:seed",
     "start:seed": "npm run prisma:reset && npm run prisma:studio && npm run start:dev",
     "prisma:reset": "npx prisma migrate reset --force",
     "prisma:studio": "npx prisma studio",
-    "prisma:migrate": "npx prisma migrate dev && npx prisma generate"
+    "prisma:migrate": "npx prisma migrate dev && npx prisma generate",
+    "hardreset": "",
+    "emulators:stop": "npx kill-port 9099 8081 9000 5001 9199"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
