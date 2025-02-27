@@ -1,0 +1,169 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+      
+     match /{document=**} {
+      allow read, write: if isLogged();
+    }
+    
+    
+    	match /users/{id} {
+    	allow read, write: if isMineOrMyCompany(id, database)
+    }
+    
+    match /nfcTags {
+    allow read: if true
+    allow write: if false
+    }
+    
+     	match /registrys/{document=**} {
+    	allow write: if isLogged()
+      allow read: if false
+    }
+    
+    match /stats/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+    
+    match /daysWorked/{id}/{month}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+    
+    match /programas/{document=**}{
+    allow read: if false
+    }
+    
+    match /overall/{document=**}{
+    allow read: if isLogged()
+    }
+    
+   
+    
+    match /versions/{document=**}{
+    allow read: if isLogged()
+    }
+    
+      	match /projects/{document=**} {
+    	allow read: if isLogged()
+      allow write: if isLogged()
+    }
+    
+    	match /desktopLink/{document=**} {
+    	allow read: if true
+    }
+    
+    match /help/{document=**}{
+    allow read: if true
+    }
+    
+    match /codes/{document=**}{
+    allow write, read: if isLogged()
+    }
+    
+    // DELICADAS E IMPORTANTES
+    match /calendar/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+    match /horario/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /yearly/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /yearlyProj/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /monthly/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /monthlyProj/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /weekly/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /weeklyProj/{id}/{document=**}{
+    allow read: if isMineOrMyCompany(id)
+    }
+     match /informesRegistroHorario/{id}/{document=**}{
+    allow read,write: if isMineOrMyCompany(id)
+    }
+     match /informesRegistroHorarioTurnos/{id}/{document=**}{
+    allow read,write: if isMineOrMyCompany(id)
+    }
+    match /conexion/{id}/{document=**}{
+    allow read, write: if isMineOrMyCompany(id)
+    }
+    
+    
+    // ABIERTAS A TODO EL MUNDO
+    
+    match /translations/{document=**}{
+    allow read: if true
+    }
+    
+    // SEGURIDAD BAJA
+    
+    
+      match /workerValue/{document=**}{
+    allow read: if isLogged()
+    }
+    
+    // POCO USADAS
+    
+    match /notifications/{id}/{document=**}{
+    allow read, write: if (isLogged() && isOwner(id))
+    }
+    
+    
+    match /errorsDesktop/{id}/{document=**}{
+    allow  write: if isLogged()
+    }
+    
+     match /chronForStartStop/{id}/{document=**}{
+    allow read,write: if isLogged() && isOwner(id)
+    }
+    
+    
+  
+  
+    
+  
+}
+
+ 
+  //FUNCTIONS
+  //
+  function isLogged(){  	
+    	return request.auth.uid != null;
+  }  
+  function isOwner(id){
+   return request.auth.uid == id;
+  }
+  
+  function incomingData(){
+  	return request.resource.data
+  }
+  
+  function ownerCanCreateProfile(id){
+  	return isOwner(id) && incomingData().type == "manager"
+  }
+  
+  function workerProfileCreation(){  	
+  	return isOwner(incomingData().ownerId) && incomingData().type == "worker"
+  }
+  
+function belongsToCompany(id, database) {
+  let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+  let ownId = userDoc.ownerId.length >0 ? userDoc.ownerId[0] :  userDoc.oldOwnerId[0];
+  return ownId == id;
+}
+ 
+ function isMineOrMyCompany(id, database){
+ return isLogged() && (  isOwner(id) || belongsToCompany(id, database))
+ }
+  
+  
+}
