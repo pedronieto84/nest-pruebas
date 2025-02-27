@@ -45,6 +45,32 @@ $ pnpm install
 3. Generate a service account key from the Firebase project settings and download the JSON file.
 4. Update the `FirestoreModule` configuration in `src/app.module.ts` with your Firebase project ID and the path to your service account key JSON file.
 
+# Firebase Emulator Setup
+
+## Starting the Firebase Emulators
+
+To start the Firebase Emulators, run the following command:
+
+```sh
+firebase emulators:start
+```
+
+## Calling the `deleteAllUsers` Function
+
+To call the `deleteAllUsers` function, send an HTTP POST request to the following URL:
+
+```
+http://localhost:5001/{your-project-id}/us-central1/deleteAllUsers
+```
+
+Replace `{your-project-id}` with your actual Firebase project ID.
+
+Example using `curl`:
+
+```sh
+curl -X POST http://localhost:5001/{your-project-id}/us-central1/deleteAllUsers
+```
+
 ## Running the app
 
 ```bash
