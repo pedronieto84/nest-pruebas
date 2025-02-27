@@ -167,7 +167,6 @@ async function main() {
 
     // Generar Array de Días
     const dates = generateRandomDates(configObject.daysWorked);
-    console.log(dates);
     const arrayFinalToInsert = []
     combinations.forEach(async (combination, combinationIndex) => {
 
@@ -238,7 +237,6 @@ async function main() {
         data: arrayFinalToInsert
     })
 
-    console.log(arrayFinalToInsert);
 
     // Upload all files from the /assets folder to the Storage Emulator
     const seedFolderPath = path.join(__dirname, '../assets');
@@ -247,7 +245,17 @@ async function main() {
 
         for (const file of files) {
             const filePath = path.join(seedFolderPath, file);
-            const destinationPath = `seed/${file}`;
+            let destinationPath = `${file}`;
+
+            // Determine the destination path based on the filename prefix
+            if (file.startsWith("faces-")) {
+                destinationPath = `faces/${file}`;
+            } else if (file.startsWith("screenshots-")) {
+                destinationPath = `screenshots/${file}`;
+            } else if (file.startsWith("video-")) {
+                destinationPath = `video/${file}`;
+            }
+
             await uploadFile(filePath, destinationPath);
         }
     } else {
