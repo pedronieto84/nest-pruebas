@@ -1,6 +1,6 @@
 import { PrismaClient, Role, ProjectRole, Relation, RecordPosition, RecordType } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
-import { createFirebaseUser } from './../src/firebase/firebaseAuth';
+import { createFirebaseUser, deleteUser, signInFire, signInWithEmailAndPassword } from './../src/firebase/firebaseAuth';
 import { uploadFile } from './../src/firebase/firebaseStorage'; // Import the uploadFile function
 import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./helpers.seed";
 import * as moment from 'moment';
@@ -24,6 +24,9 @@ const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles mat
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
 
 async function main() {
+
+
+
 
        // Eliminar todos los datos de la base de datos
        await prisma.user_Relations.deleteMany({});

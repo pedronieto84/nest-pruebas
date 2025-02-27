@@ -1,4 +1,4 @@
-import { getAuth, createUserWithEmailAndPassword, connectAuthEmulator } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, connectAuthEmulator, deleteUser, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "./firebaseConfig"; // Ensure you have the correct Firebase config
 
@@ -21,4 +21,6 @@ async function createFirebaseUser(email: string, password: string = "123456") {
     }
 }
 
-export { auth, createFirebaseUser };
+
+
+export { auth, createFirebaseUser, deleteUser  };
