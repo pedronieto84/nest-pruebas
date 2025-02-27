@@ -94,21 +94,57 @@ model User_Relations {
 }
 
 model Records {
-  recordId    Int            @id @unique @default(autoincrement())
-  userId      Int
-  projId      Int
-  start       DateTime
-  end         DateTime
-  keyboard    Int
-  mouseMove   Int
-  mouseClicks Int
-  seconds     Int
-  day         String
-  time       String
-  visible      Boolean // Ensure the column `existe` is defined
+  recordId Int      @id @unique @default(autoincrement())
+  userId   Int
+  projId   Int
+  start    DateTime
+  end      DateTime
+  seconds  Int
+
   position    RecordPosition
-  user        User           @relation(fields: [userId], references: [userId])
-  project     Project        @relation(fields: [projId], references: [projId])
+  day     String
+  time    String
+  visible Boolean
+  type    RecordType
+
+  user    User    @relation(fields: [userId], references: [userId])
+  project Project @relation(fields: [projId], references: [projId])
+
+  RecordsDesktop RecordsDesktop[]
+  RecordsMovile  RecordsMobile[]
+}
+
+model RecordsDesktop {
+  recordId    Int      @id      @unique
+
+  keyboard    Int?
+  mouseMove   Int?
+  mouseClicks Int?
+
+  image       String?
+
+  record Records @relation(fields: [recordId], references: [recordId])
+
+  RecordsPrograms RecordsPrograms[]
+}
+
+model RecordsPrograms {
+  recordProgrId Int            @id @unique @default(autoincrement())
+  recordId      Int
+  time          DateTime
+  title         String
+  keyboard      Int?
+  mouseMove     Int?
+  mouseClicks   Int?
+  record        RecordsDesktop @relation(fields: [recordId], references: [recordId])
+}
+
+model RecordsMobile {
+  recordId    Int     @id @unique
+  record      Records @relation(fields: [recordId], references: [recordId])
+  geoPosition String
+  video       String?
+  foto        String?
 }
 
 enum Role {
@@ -131,4 +167,9 @@ enum RecordPosition {
   START
   END
   MIDDLE
+}
+
+enum RecordType {
+  DESKTOP
+  MOBILE
 }
