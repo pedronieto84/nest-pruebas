@@ -240,14 +240,18 @@ async function main() {
 
     console.log(arrayFinalToInsert);
 
-    // Upload all files from the /seed folder to the Storage Emulator
-    const seedFolderPath = path.join(__dirname, 'seed');
-    const files = fs.readdirSync(seedFolderPath);
+    // Upload all files from the /assets folder to the Storage Emulator
+    const seedFolderPath = path.join(__dirname, '../assets');
+    if (fs.existsSync(seedFolderPath)) {
+        const files = fs.readdirSync(seedFolderPath);
 
-    for (const file of files) {
-        const filePath = path.join(seedFolderPath, file);
-        const destinationPath = `seed/${file}`;
-        await uploadFile(filePath, destinationPath);
+        for (const file of files) {
+            const filePath = path.join(seedFolderPath, file);
+            const destinationPath = `seed/${file}`;
+            await uploadFile(filePath, destinationPath);
+        }
+    } else {
+        console.warn(`Directory not found: ${seedFolderPath}`);
     }
 }
 
