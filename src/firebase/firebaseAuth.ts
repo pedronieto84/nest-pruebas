@@ -1,13 +1,17 @@
-import { getAuth, connectAuthEmulator, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, connectAuthEmulator } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "./firebaseConfig"; // Ensure you have the correct Firebase config
 
-import { app } from "./firebaseConfig";
-
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Correct the URL scheme for the Auth Emulator
-connectAuthEmulator(auth, "http://localhost:9099");
+try {
+    connectAuthEmulator(auth, "http://localhost:9099"); // Ensure the port matches the emulator configuration
+} catch (error) {
+    console.error("Error connecting to Firebase Auth emulator:", error);
+}
 
-async function createFirebaseUser(email: string, password: string = '123456') {
+async function createFirebaseUser(email: string, password: string = "123456") {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         return userCredential.user;

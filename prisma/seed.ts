@@ -6,7 +6,6 @@ import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./hel
 import * as moment from 'moment';
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
 
 const prisma = new PrismaClient();
 
@@ -82,15 +81,20 @@ async function main() {
         // Creo todos los empleados de una compañía asignandoles a una compañía y departamneto aleatorio
         const usersData = await Promise.all(
             getNames(configObject.workers).map(async (name, index) => {
-                const firebaseUser = await createFirebaseUser(`${name.toLowerCase()}-${index}@${comp.name}.com`);
-                return {
-                    firebaseId: firebaseUser.uid,
-                    name: `${name} ${getSurnames(configObject.workers)[index]}`,
-                    compId: comp.compId,
-                    email: `${name.toLowerCase()}-${index}@${comp.name}.com`,
-                    role: index === 0 ? Role.OWNER : Role.WORKER, // First user is OWNER, rest are WORKER
-                    deptId: departmentsOfThisComp[Math.floor(Math.random() * departmentsOfThisComp.length)].deptId
-                };
+                try {
+                    const firebaseUser = await createFirebaseUser(`${name.toLowerCase()}-${index}@${comp.name}.com`);
+                    return {
+                        firebaseId: firebaseUser.uid,
+                        name: `${name} ${getSurnames(configObject.workers)[index]}`,
+                        compId: comp.compId,
+                        email: `${name.toLowerCase()}-${index}@${comp.name}.com`,
+                        role: index === 0 ? Role.OWNER : Role.WORKER, // First user is OWNER, rest are WORKER
+                        deptId: departmentsOfThisComp[Math.floor(Math.random() * departmentsOfThisComp.length)].deptId
+                    };
+                } catch (error) {
+                    console.error(`Error creating Firebase user for ${name.toLowerCase()}-${index}@${comp.name}.com:`, error);
+                    throw error;
+                }
             })
         );
 
