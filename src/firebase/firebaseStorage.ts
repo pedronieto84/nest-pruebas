@@ -1,15 +1,21 @@
-import { getStorage, connectStorageEmulator } from "firebase/storage";
+import { getStorage, connectStorageEmulator, ref, uploadBytes } from "firebase/storage";
 import { app } from "./firebaseConfig";
 import * as fs from 'fs';
-import * as path from 'path';
 
-// Read the storage port from the configuration file
-const portConfigPath = path.join(__dirname, '../../storagePortConfig.json');
-const portConfig = JSON.parse(fs.readFileSync(portConfigPath, 'utf8'));
-const storagePort = portConfig.storagePort;
+
+
 
 // Connect to the Firestore Emulator
-const firestore = getStorage(app);
-connectStorageEmulator(firestore, "localhost", storagePort);
+const storage = getStorage(app);
+connectStorageEmulator(storage, "localhost", 9199);
 
-export { firestore };
+// Function to upload a file to a specified path in the storage
+async function uploadFile(filePath: string, destinationPath: string) {
+    const fileBuffer = fs.readFileSync(filePath);
+    const storageRef = ref(storage, destinationPath);
+    console.log('storage ref', storageRef)
+    await uploadBytes(storageRef, fileBuffer);
+    console.log(`File uploaded to ${destinationPath}`);
+}
+
+export { storage, uploadFile };

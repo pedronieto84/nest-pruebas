@@ -1,9 +1,12 @@
 import { PrismaClient, Role, ProjectRole, Relation, RecordPosition } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
-
-import { auth, createFirebaseUser } from './../src/firebase/firebaseAuth';
+import { createFirebaseUser } from './../src/firebase/firebaseAuth';
+import { uploadFile } from './../src/firebase/firebaseStorage'; // Import the uploadFile function
 import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./helpers.seed";
 import * as moment from 'moment';
+import * as fs from 'fs';
+import * as path from 'path';
+import { execSync } from 'child_process';
 
 const prisma = new PrismaClient();
 
@@ -20,7 +23,10 @@ const configObject = {
 
 const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles match the Enum values
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
+
 async function main() {
+
+
     await prisma.company.createMany({
         data: getCompanies(configObject.companies).map((company) => ({
             name: company
@@ -234,6 +240,15 @@ async function main() {
 
     console.log(arrayFinalToInsert);
 
+    // Upload all files from the /seed folder to the Storage Emulator
+    const seedFolderPath = path.join(__dirname, 'seed');
+    const files = fs.readdirSync(seedFolderPath);
+
+    for (const file of files) {
+        const filePath = path.join(seedFolderPath, file);
+        const destinationPath = `seed/${file}`;
+        await uploadFile(filePath, destinationPath);
+    }
 }
 
 main()
