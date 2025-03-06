@@ -85,8 +85,11 @@ async function main() {
     const videoPaths = Array.from({ length: configObject.storageVideos }, (_, i) => path.join(__dirname, `../assets/video-${i + 1}.mp4`));
 
     let imageUrls:string[]
+    let facesUrls:string[]
     try{
-        imageUrls = (await uploadImagesAndGetUrls([...imagePaths, ...facePaths])).filter((url) => url.startsWith('screenshots') );
+        const allUrls = await uploadImagesAndGetUrls([...imagePaths, ...facePaths])
+        imageUrls = allUrls.filter((url) => url.startsWith('screenshots') );
+        facesUrls = allUrls.filter((url) => url.startsWith('faces') );
         console.log('images uploaded',imageUrls);
 
     }catch(error){  
@@ -318,7 +321,7 @@ async function main() {
                     if (typeShift === RecordType.MOBILE) {
                         const programsToInsert = {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
-
+                            foto: facesUrls[Math.floor(Math.random() * facesUrls.length)],
                             geoPosition: '40.416775,-3.703790',
 
                         }
