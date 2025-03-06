@@ -72,9 +72,17 @@ async function main() {
 
     // Upload 10 images and get their URLs
     const imagePaths = Array.from({ length: 5 }, (_, i) => path.join(__dirname, `../assets/screenshots-${i + 1}.png`));
+    const facePaths = Array.from({ length: 5 }, (_, i) => path.join(__dirname, `../assets/faces-${i + 2}.jpg`));
     console.log('IMAGE PATHS', imagePaths);
-    const imageUrls = await uploadImagesAndGetUrls(imagePaths);
+    const imageUrls = await uploadImagesAndGetUrls([...imagePaths, ...facePaths]);
     console.log('images uploaded',imageUrls);
+
+
+
+
+
+
+    
     await prisma.company.createMany({
         data: getCompanies(configObject.companies).map((company) => ({
             name: company
@@ -271,7 +279,7 @@ async function main() {
                         position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
 
                         visible: Math.random() > 0.05 ? true : false, // Ensure the field name matches the schema
-                        image: imageUrls[Math.floor(Math.random() * imageUrls.length)], // Set image URL
+                       
                     }
 
                     secondsTracked = objectToInsert.seconds;
@@ -284,7 +292,7 @@ async function main() {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
 
 
-                            image: `screenshots-${getRandomNumber(1, 10)}.png`,
+                            image: imageUrls[Math.floor(Math.random() * imageUrls.length)],
 
                             keyboard: start ? 0 : getRandomNumber(100, 1000),
                             mouseMove: start ? 0 : getRandomNumber(100, 10000),
@@ -332,29 +340,7 @@ async function main() {
     })
 
 
-    // Upload all files from the /assets folder to the Storage Emulator
-    const seedFolderPath = path.join(__dirname, '../assets');
-    if (fs.existsSync(seedFolderPath)) {
-        const files = fs.readdirSync(seedFolderPath);
-
-        for (const file of files) {
-            const filePath = path.join(seedFolderPath, file);
-            let destinationPath = `${file}`;
-
-            // Determine the destination path based on the filename prefix
-            if (file.startsWith("faces-")) {
-                destinationPath = `faces/${file}`;
-            } else if (file.startsWith("screenshots-")) {
-                destinationPath = `screenshots/${file}`;
-            } else if (file.startsWith("video-")) {
-                destinationPath = `video/${file}`;
-            }
-
-            await uploadFile(filePath, destinationPath);
-        }
-    } else {
-        console.warn(`Directory not found: ${seedFolderPath}`);
-    }
+ 
 }
 
 main()

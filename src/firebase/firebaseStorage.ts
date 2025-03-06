@@ -15,8 +15,8 @@ async function uploadFile(filePath: string, destinationPath: string) {
         // How to return the path of the uploaded file
 
         // Get the download URL
-        const downloadURL = await getDownloadURL(res.ref);
-        return downloadURL
+        //const downloadURL = await getDownloadURL(res.ref);
+        return res.ref.fullPath
     } else {
         console.warn(`Skipping ${filePath} as it is not a file.`);
     }
