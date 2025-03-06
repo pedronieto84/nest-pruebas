@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios'; // Import axios
+import { storage } from "firebase-admin";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,10 @@ const configObject = {
     projects: 2,
     daysWorked: 20,
     recordsPerDay: 40,
-    maximumShifts: 4
+    maximumShifts: 4,
+    storageFaces: 3,
+    storageScreenshots: 5,
+    storageVideos: 1
 }
 
 const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles match the Enum values
@@ -26,11 +30,16 @@ const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // E
 async function uploadImagesAndGetUrls(imagePaths: string[]): Promise<string[]> {
     const uploadPromises = []
     imagePaths.forEach( (imagePath) => {
-        const destinationPath = `images/${path.basename(imagePath)}`;
+        
+        let destinationPath
+        if(imagePath.includes('faces') ) destinationPath = `faces/${path.basename(imagePath)}`
+        if(imagePath.includes('screenshots') ) destinationPath = `screenshots/${path.basename(imagePath)}`
+        if(imagePath.includes('video') ) destinationPath = `videos/${path.basename(imagePath)}`
+
         return uploadPromises.push( uploadFile(imagePath, destinationPath))
         // Assuming the destination path is the URL
     });
-    return await Promise.all(uploadPromises);
+    return Promise.all(uploadPromises);
 }
 
 async function main() {
@@ -71,18 +80,22 @@ async function main() {
     // const imageUrls = await uploadImagesAndGetUrls(imagePaths);
 
     // Upload 10 images and get their URLs
-    const imagePaths = Array.from({ length: 5 }, (_, i) => path.join(__dirname, `../assets/screenshots-${i + 1}.png`));
-    const facePaths = Array.from({ length: 5 }, (_, i) => path.join(__dirname, `../assets/faces-${i + 2}.jpg`));
-    console.log('IMAGE PATHS', imagePaths);
-    const imageUrls = await uploadImagesAndGetUrls([...imagePaths, ...facePaths]);
-    console.log('images uploaded',imageUrls);
+    const imagePaths = Array.from({ length: configObject.storageScreenshots }, (_, i) => path.join(__dirname, `../assets/screenshots-${i + 1}.png`));
+    const facePaths = Array.from({ length:  configObject.storageFaces  }, (_, i) => path.join(__dirname, `../assets/faces-${i + 2}.jpg`));
+    const videoPaths = Array.from({ length: configObject.storageVideos }, (_, i) => path.join(__dirname, `../assets/video-${i + 1}.mp4`));
+
+    let imageUrls:string[]
+    try{
+        imageUrls = (await uploadImagesAndGetUrls([...imagePaths, ...facePaths])).filter((url) => url.startsWith('screenshots') );
+        console.log('images uploaded',imageUrls);
+
+    }catch(error){  
+        console.error('Error uploading images', error);
+    }
+
+    uploadImagesAndGetUrls(videoPaths).then((videoUrls) => {console.log('video uploaded');}).catch((error) => {console.error('Error uploading video', error);});
 
 
-
-
-
-
-    
     await prisma.company.createMany({
         data: getCompanies(configObject.companies).map((company) => ({
             name: company
