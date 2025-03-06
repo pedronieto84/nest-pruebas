@@ -69,6 +69,13 @@ export const projects: string[] = [
     "Seguridad Cibernetica Avanzada"
 ];
 
+export const arrayOfPrograms: string[] = [
+    "Microsoft Excell: Nivel Avanzado",
+    "Microsoft Word: Files clients 3",
+    "Google Chrome: Wikipedia"
+    
+]
+
 export const getCompanies = (amount: number = 5): string[] => {
     return companies.slice(0, amount);
 };
@@ -88,4 +95,8 @@ export const getDepartments = (amount: number = 5): string[] => {
 export const getProjects = (amount: number = 5): string[] => {
     return projects.slice(0, amount);
 };
+
+export const getPrograms = (amount: number = 3): string[] => {
+    return arrayOfPrograms.slice(0, amount);
+}
 

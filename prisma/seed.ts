@@ -1,5 +1,5 @@
 import { PrismaClient, Role, ProjectRole, Relation, RecordPosition, RecordType } from "@prisma/client";
-import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
+import { getCompanies, getDepartments, getNames, getSurnames, getProjects, getPrograms } from "./data";
 import { createFirebaseUser } from './../src/firebase/firebaseAuth';
 import { uploadFile } from './../src/firebase/firebaseStorage'; // Import the uploadFile function
 import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./helpers.seed";
@@ -246,6 +246,7 @@ async function main() {
     const dates = generateRandomDates(configObject.daysWorked);
     const arrayFinalToInsert = []
     const arrayProgramsToInsert = []
+    const arrayRecordsPrograms = []
     const arrayMobileToInsert = []
     let indexOfTotalRecords = 1
     combinations.forEach(async (combination, combinationIndex) => {
@@ -316,12 +317,30 @@ async function main() {
                         }
 
                         arrayProgramsToInsert.push(programsToInsert);
+
+                        for (let index = 0; index < 10; index++) {
+
+                            const programsArray = getPrograms(3)
+
+                            const objectRecordsPrograms = {
+
+                                recordId: indexOfTotalRecords,
+                                time: moment(startDate).add(60, 'seconds').toDate(),
+                                title: programsArray[(Math.round(Math.random() * (programsArray.length -1 )   ))],
+                                keyboard: Math.round(Math.random()*3),
+                                mouseMove: Math.round(Math.random()*20),
+                                mouseClicks: Math.round(Math.random()*2)
+                            }
+                            arrayRecordsPrograms.push(objectRecordsPrograms)
+                        }
+
+                       
                     }
 
                     if (typeShift === RecordType.MOBILE) {
                         const programsToInsert = {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
-                            foto: Math.random()< 0.10 ? facesUrls[Math.floor(Math.random() * facesUrls.length)]: null,
+                            foto: Math.random() < 0.10 ? facesUrls[Math.floor(Math.random() * facesUrls.length)] : null,
                             geoPosition: '40.416775,-3.703790',
                             video: Math.random() < 0.05 ? 'videos/video-1.mp4' : null // 4% chance to set the string, else empty
                         }
@@ -353,6 +372,10 @@ async function main() {
 
     await prisma.recordsMobile.createMany({
         data: arrayMobileToInsert
+    })
+
+    await prisma.recordsPrograms.createMany({
+        data: arrayRecordsPrograms
     })
 
 
