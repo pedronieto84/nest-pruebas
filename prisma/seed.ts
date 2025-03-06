@@ -7,7 +7,6 @@ import * as moment from 'moment';
 import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios'; // Import axios
-import { storage } from "firebase-admin";
 
 const prisma = new PrismaClient();
 
@@ -29,14 +28,14 @@ const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // E
 
 async function uploadImagesAndGetUrls(imagePaths: string[]): Promise<string[]> {
     const uploadPromises = []
-    imagePaths.forEach( (imagePath) => {
-        
-        let destinationPath
-        if(imagePath.includes('faces') ) destinationPath = `faces/${path.basename(imagePath)}`
-        if(imagePath.includes('screenshots') ) destinationPath = `screenshots/${path.basename(imagePath)}`
-        if(imagePath.includes('video') ) destinationPath = `videos/${path.basename(imagePath)}`
+    imagePaths.forEach((imagePath) => {
 
-        return uploadPromises.push( uploadFile(imagePath, destinationPath))
+        let destinationPath
+        if (imagePath.includes('faces')) destinationPath = `faces/${path.basename(imagePath)}`
+        if (imagePath.includes('screenshots')) destinationPath = `screenshots/${path.basename(imagePath)}`
+        if (imagePath.includes('video')) destinationPath = `videos/${path.basename(imagePath)}`
+
+        return uploadPromises.push(uploadFile(imagePath, destinationPath))
         // Assuming the destination path is the URL
     });
     return Promise.all(uploadPromises);
@@ -81,22 +80,23 @@ async function main() {
 
     // Upload 10 images and get their URLs
     const imagePaths = Array.from({ length: configObject.storageScreenshots }, (_, i) => path.join(__dirname, `../assets/screenshots-${i + 1}.png`));
-    const facePaths = Array.from({ length:  configObject.storageFaces  }, (_, i) => path.join(__dirname, `../assets/faces-${i + 2}.jpg`));
+    const facePaths = Array.from({ length: configObject.storageFaces }, (_, i) => path.join(__dirname, `../assets/faces-${i + 2}.jpg`));
     const videoPaths = Array.from({ length: configObject.storageVideos }, (_, i) => path.join(__dirname, `../assets/video-${i + 1}.mp4`));
 
-    let imageUrls:string[]
-    let facesUrls:string[]
-    try{
+    let imageUrls: string[]
+    let facesUrls: string[]
+    let videosUrls: string[]
+    try {
         const allUrls = await uploadImagesAndGetUrls([...imagePaths, ...facePaths])
-        imageUrls = allUrls.filter((url) => url.startsWith('screenshots') );
-        facesUrls = allUrls.filter((url) => url.startsWith('faces') );
-        console.log('images uploaded',imageUrls);
+        imageUrls = allUrls.filter((url) => url.startsWith('screenshots'));
+        facesUrls = allUrls.filter((url) => url.startsWith('faces'));
+        console.log('images uploaded', videosUrls);
 
-    }catch(error){  
+    } catch (error) {
         console.error('Error uploading images', error);
     }
 
-    uploadImagesAndGetUrls(videoPaths).then((videoUrls) => {console.log('video uploaded');}).catch((error) => {console.error('Error uploading video', error);});
+    uploadImagesAndGetUrls(videoPaths).then((videoUrls) => { console.log('video uploaded'); }).catch((error) => { console.error('Error uploading video', error); });
 
 
     await prisma.company.createMany({
@@ -295,7 +295,7 @@ async function main() {
                         position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
 
                         visible: Math.random() > 0.05 ? true : false, // Ensure the field name matches the schema
-                       
+
                     }
 
                     secondsTracked = objectToInsert.seconds;
@@ -308,7 +308,7 @@ async function main() {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
 
 
-                            image: imageUrls[Math.floor(Math.random() * imageUrls.length)],
+                            image: Math.random() < 0.9 ? imageUrls[Math.floor(Math.random() * imageUrls.length)] : null,
 
                             keyboard: start ? 0 : getRandomNumber(100, 1000),
                             mouseMove: start ? 0 : getRandomNumber(100, 10000),
@@ -321,9 +321,9 @@ async function main() {
                     if (typeShift === RecordType.MOBILE) {
                         const programsToInsert = {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
-                            foto: facesUrls[Math.floor(Math.random() * facesUrls.length)],
+                            foto: Math.random()< 0.10 ? facesUrls[Math.floor(Math.random() * facesUrls.length)]: null,
                             geoPosition: '40.416775,-3.703790',
-
+                            video: Math.random() < 0.05 ? 'videos/video-1.mp4' : null // 4% chance to set the string, else empty
                         }
                         arrayMobileToInsert.push(programsToInsert);
 
@@ -356,7 +356,7 @@ async function main() {
     })
 
 
- 
+
 }
 
 main()
