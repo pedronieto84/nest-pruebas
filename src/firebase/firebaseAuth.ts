@@ -21,6 +21,4 @@ async function createFirebaseUser(email: string, password: string = "123456") {
     }
 }
 
-
-
-export { auth, createFirebaseUser, deleteUser  };
+export { auth, createFirebaseUser, deleteUser, signInWithEmailAndPassword };

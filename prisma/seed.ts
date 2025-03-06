@@ -1,11 +1,12 @@
 import { PrismaClient, Role, ProjectRole, Relation, RecordPosition, RecordType } from "@prisma/client";
 import { getCompanies, getDepartments, getNames, getSurnames, getProjects } from "./data";
-import { createFirebaseUser, deleteUser, signInFire, signInWithEmailAndPassword } from './../src/firebase/firebaseAuth';
+import { createFirebaseUser } from './../src/firebase/firebaseAuth';
 import { uploadFile } from './../src/firebase/firebaseStorage'; // Import the uploadFile function
 import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./helpers.seed";
 import * as moment from 'moment';
 import * as fs from 'fs';
 import * as path from 'path';
+import axios from 'axios'; // Import axios
 
 const prisma = new PrismaClient();
 
@@ -17,29 +18,31 @@ const configObject = {
     daysWorked: 20,
     recordsPerDay: 40,
     maximumShifts: 4
-
 }
 
 const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles match the Enum values
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
 
 async function main() {
+    // Call the deleteUsers function
+    try {
+        const response = await axios.post('http://localhost:5001/{your-project-id}/us-central1/deleteAllUsers');
+        console.log('Firebase users deleted:', response.data);
+    } catch (error) {
+        console.error('Error deleting Firebase users:', error);
+    }
 
-
-
-
-       // Eliminar todos los datos de la base de datos
-       await prisma.user_Relations.deleteMany({});
-       await prisma.user_Projects.deleteMany({});
-       await prisma.department_Manager.deleteMany({});
-       await prisma.user.deleteMany({});
-       await prisma.project.deleteMany({});
-       await prisma.department.deleteMany({});
-       await prisma.company.deleteMany({});
-       await prisma.recordsPrograms.deleteMany({});
-       await prisma.recordsMobile.deleteMany({});
-       await prisma.records.deleteMany({});
-
+    // Eliminar todos los datos de la base de datos
+    await prisma.user_Relations.deleteMany({});
+    await prisma.user_Projects.deleteMany({});
+    await prisma.department_Manager.deleteMany({});
+    await prisma.user.deleteMany({});
+    await prisma.project.deleteMany({});
+    await prisma.department.deleteMany({});
+    await prisma.company.deleteMany({});
+    await prisma.recordsPrograms.deleteMany({});
+    await prisma.recordsMobile.deleteMany({});
+    await prisma.records.deleteMany({});
 
     await prisma.company.createMany({
         data: getCompanies(configObject.companies).map((company) => ({
@@ -214,7 +217,7 @@ async function main() {
                 // Aqui estoy dentro de un shift
                 for (const [recordIndex, record] of shift.entries()) {
 
-                    const typeShift = Math.random() > 0.2? RecordType.DESKTOP : RecordType.MOBILE
+                    const typeShift = Math.random() > 0.2 ? RecordType.DESKTOP : RecordType.MOBILE
                     // cada record, debo saber si es el primero o el ultimo
                     let start = false;
                     let end = false;
@@ -225,7 +228,7 @@ async function main() {
                     const secondsOfThisObject = start ? 0 : 600//getRandomNumber(600, 800)
                     const endDate = moment(startDate).add(secondsOfThisObject, 'seconds').toDate();
                     const objectToInsert = {
-                        recordId : indexOfTotalRecords,
+                        recordId: indexOfTotalRecords,
                         userId: combination.userId,
                         projId: combination.projId,
                         seconds: secondsOfThisObject,
@@ -235,7 +238,7 @@ async function main() {
                         day: moment(startDate).format('DD-MM-YYYY'),
                         type: typeShift,
                         position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
-             
+
                         visible: Math.random() > 0.05 ? true : false // Ensure the field name matches the schema
                     }
 
@@ -246,10 +249,10 @@ async function main() {
                     if (typeShift === RecordType.DESKTOP) {
                         const programsToInsert = {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
-                          
-                            
+
+
                             image: `screenshots-${getRandomNumber(1, 10)}.png`,
-                            
+
                             keyboard: start ? 0 : getRandomNumber(100, 1000),
                             mouseMove: start ? 0 : getRandomNumber(100, 10000),
                             mouseClicks: start ? 0 : getRandomNumber(100, 3000),
@@ -261,7 +264,7 @@ async function main() {
                     if (typeShift === RecordType.MOBILE) {
                         const programsToInsert = {
                             recordId: indexOfTotalRecords, // Asegúrate de que recordId se proporciona
-                            
+
                             geoPosition: '40.416775,-3.703790',
 
                         }
