@@ -71,6 +71,38 @@ Example using `curl`:
 curl -X POST http://localhost:5001/{your-project-id}/us-central1/deleteAllUsers
 ```
 
+## Calling the `deleteAllFirestoreData` Function
+
+To call the `deleteAllFirestoreData` function, send an HTTP POST request to the following URL:
+
+```
+http://localhost:5001/{your-project-id}/us-central1/deleteAllFirestoreData
+```
+
+Replace `{your-project-id}` with your actual Firebase project ID.
+
+Example using `curl`:
+
+```sh
+curl -X POST http://localhost:5001/{your-project-id}/us-central1/deleteAllFirestoreData
+```
+
+## Calling the `deleteAllStorageData` Function
+
+To call the `deleteAllStorageData` function, send an HTTP POST request to the following URL:
+
+```
+http://localhost:5001/{your-project-id}/us-central1/deleteAllStorageData
+```
+
+Replace `{your-project-id}` with your actual Firebase project ID.
+
+Example using `curl`:
+
+```sh
+curl -X POST http://localhost:5001/{your-project-id}/us-central1/deleteAllStorageData
+```
+
 ## Running the app
 
 ```bash

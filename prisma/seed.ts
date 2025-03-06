@@ -24,12 +24,19 @@ const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles mat
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
 
 async function main() {
-    // Call the deleteUsers function
+    // Call the deleteUsers function on the local emulator
+
+    const arrayOfDeletes = [
+        axios.post('http://localhost:5001/worktocloud3/us-central1/deleteAllUsers'),
+        axios.post('http://localhost:5001/worktocloud3/us-central1/deleteAllFirestoreData'),
+        axios.post('http://localhost:5001/worktocloud3/us-central1/deleteAllStorageData')
+
+    ]
     try {
-        const response = await axios.post('http://localhost:5001/{your-project-id}/us-central1/deleteAllUsers');
-        console.log('Firebase users deleted:', response.data);
+        const response = await Promise.all(arrayOfDeletes);
+        console.log('All data has been deleted successfully.', response);
     } catch (error) {
-        console.error('Error deleting Firebase users:', error);
+        console.error("Error deleting users:", error);
     }
 
     // Eliminar todos los datos de la base de datos
