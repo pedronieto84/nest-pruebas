@@ -23,6 +23,16 @@ const configObject = {
 const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles match the Enum values
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
 
+async function uploadImagesAndGetUrls(imagePaths: string[]): Promise<string[]> {
+    const uploadPromises = []
+    imagePaths.forEach( (imagePath) => {
+        const destinationPath = `images/${path.basename(imagePath)}`;
+        return uploadPromises.push( uploadFile(imagePath, destinationPath))
+        // Assuming the destination path is the URL
+    });
+    return await Promise.all(uploadPromises);
+}
+
 async function main() {
     // Call the deleteUsers function on the local emulator
 
@@ -34,7 +44,7 @@ async function main() {
     ]
     try {
         const response = await Promise.all(arrayOfDeletes);
-        console.log('All data has been deleted successfully.', response);
+        console.log('All FIREBASE DATA has been deleted successfully.', response);
     } catch (error) {
         console.error("Error deleting users:", error);
     }
@@ -51,6 +61,20 @@ async function main() {
     await prisma.recordsMobile.deleteMany({});
     await prisma.records.deleteMany({});
 
+    console.log('All DB DATA has been deleted successfully.');
+
+    // Subo todas las imágenes al Storage y pongo las urls en el array imageUrls
+
+    // const seedFolderPath2 = path.join(__dirname, '../assets');
+    // const imageFiles = fs.readdirSync(seedFolderPath2).filter(file => file.startsWith("faces-"));
+    // const imagePaths = imageFiles.map(file => path.join(seedFolderPath2, file));
+    // const imageUrls = await uploadImagesAndGetUrls(imagePaths);
+
+    // Upload 10 images and get their URLs
+    const imagePaths = Array.from({ length: 5 }, (_, i) => path.join(__dirname, `../assets/screenshots-${i + 1}.png`));
+    console.log('IMAGE PATHS', imagePaths);
+    const imageUrls = await uploadImagesAndGetUrls(imagePaths);
+    console.log('images uploaded',imageUrls);
     await prisma.company.createMany({
         data: getCompanies(configObject.companies).map((company) => ({
             name: company
@@ -246,11 +270,13 @@ async function main() {
                         type: typeShift,
                         position: start ? RecordPosition.START : end ? RecordPosition.END : RecordPosition.MIDDLE,
 
-                        visible: Math.random() > 0.05 ? true : false // Ensure the field name matches the schema
+                        visible: Math.random() > 0.05 ? true : false, // Ensure the field name matches the schema
+                        image: imageUrls[Math.floor(Math.random() * imageUrls.length)], // Set image URL
                     }
 
                     secondsTracked = objectToInsert.seconds;
                     arrayFinalToInsert.push(objectToInsert);
+
 
 
                     if (typeShift === RecordType.DESKTOP) {

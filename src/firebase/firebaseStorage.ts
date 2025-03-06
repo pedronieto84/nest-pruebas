@@ -1,4 +1,4 @@
-import { getStorage, connectStorageEmulator, ref, uploadBytes } from "firebase/storage";
+import { getStorage, connectStorageEmulator, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "./firebaseConfig";
 import * as fs from 'fs';
 
@@ -11,9 +11,12 @@ async function uploadFile(filePath: string, destinationPath: string) {
     if (fs.lstatSync(filePath).isFile()) {
         const fileBuffer = fs.readFileSync(filePath);
         const storageRef = ref(storage, destinationPath);
-        console.log('storage ref', storageRef);
-        await uploadBytes(storageRef, fileBuffer);
-        console.log(`File uploaded to ${destinationPath}`);
+        const res = await uploadBytes(storageRef, fileBuffer);
+        // How to return the path of the uploaded file
+
+        // Get the download URL
+        const downloadURL = await getDownloadURL(res.ref);
+        return downloadURL
     } else {
         console.warn(`Skipping ${filePath} as it is not a file.`);
     }
