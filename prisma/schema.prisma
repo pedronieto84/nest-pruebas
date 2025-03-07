@@ -33,6 +33,8 @@ model User {
   worker_relations User_Relations[] @relation("SubordinatedRelations")
 
   Records Records[]
+
+  workerSettings WorkerSettings?
 }
 
 model Company {
@@ -101,11 +103,11 @@ model Records {
   end      DateTime
   seconds  Int
 
-  position    RecordPosition
-  day     String @db.VarChar(12)
-  time    String @db.VarChar(12)
-  visible Boolean
-  type    RecordType
+  position RecordPosition
+  day      String         @db.VarChar(12)
+  time     String         @db.VarChar(12)
+  visible  Boolean
+  type     RecordType
 
   user    User    @relation(fields: [userId], references: [userId])
   project Project @relation(fields: [projId], references: [projId])
@@ -115,13 +117,13 @@ model Records {
 }
 
 model RecordsDesktop {
-  recordId    Int      @id      @unique
+  recordId Int @id @unique
 
   keyboard    Int?
   mouseMove   Int?
   mouseClicks Int?
 
-  image       String?
+  image String?
 
   record Records @relation(fields: [recordId], references: [recordId])
 
@@ -145,6 +147,52 @@ model RecordsMobile {
   geoPosition String  @db.VarChar(20)
   video       String? @db.VarChar(50)
   foto        String? @db.VarChar(50)
+}
+
+model WorkerSettings {
+  userId           Int      @id @unique
+  wakeUp           Boolean?
+  stopLockScreen   Boolean?
+  stopOnSuspend    Boolean?
+  stopOnLockScreen Boolean?
+  hidden           Boolean?
+  processes        Boolean?
+  systemData       Boolean?
+  ipLocation       Boolean?
+  internetSpeed    Boolean?
+  alwaysAwake      Boolean?
+  conexion         Boolean?
+  shutdown         Boolean?
+  screenshotView   Boolean?
+  activityView     Boolean?
+  processesView    Boolean?
+  systemDataView   Boolean?
+  resetComment     Boolean?
+  gpsView          Boolean?
+  callsView        Boolean?
+  stopOnInactive   Boolean?
+  screenshot       Boolean?
+  activity         Boolean?
+  calls            Boolean?
+  gps              Boolean?
+  recordsPhone     Int?
+  gpsPrecision     Int?
+  recWithoutMov    Boolean?
+  forceAwake       Boolean?
+  awakeEvery       Int?
+  gpsTime          Int?
+  menuConexion     Boolean?
+  menuPanel        Boolean?
+  menuGraficos     Boolean?
+  menuHorarios     Boolean?
+  menuSemanal      Boolean?
+  menuEquipo       Boolean?
+  menuProyectos    Boolean?
+  menuOficina      Boolean?
+  menuInformes     Boolean?
+  menuPartner      Boolean?
+
+  user User @relation(fields: [userId], references: [userId])
 }
 
 enum Role {
