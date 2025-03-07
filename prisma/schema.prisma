@@ -114,6 +114,8 @@ model Records {
 
   RecordsDesktop RecordsDesktop[]
   RecordsMovile  RecordsMobile[]
+
+  RecordsSystem RecordsSystem[]
 }
 
 model RecordsDesktop {
@@ -149,6 +151,17 @@ model RecordsMobile {
   foto        String? @db.VarChar(50)
 }
 
+model RecordsSystem {
+  recordId Int @id @unique
+
+  cpuUsage    Float?
+  ramUsage    Float?
+  diskUsage   Float?
+  netUsage    Float?
+  processes Json?
+  record Records @relation(fields: [recordId], references: [recordId])
+}
+
 model WorkerSettings {
   userId           Int      @id @unique
   wakeUp           Boolean? @default(false)
@@ -156,20 +169,22 @@ model WorkerSettings {
   stopOnSuspend    Boolean? @default(true)
   stopOnLockScreen Boolean? @default(true)
   hidden           Boolean? @default(false)
+
   processes        Boolean? @default(true)
   systemData       Boolean? @default(true)
-  ipLocation       Boolean? @default(true)
+
   internetSpeed    Boolean? @default(true)
   alwaysAwake      Boolean? @default(true)
   conexion         Boolean? @default(true)
   shutdown         Boolean? @default(true)
+  
   screenshotView   Boolean? @default(true)
   activityView     Boolean? @default(true)
   processesView    Boolean? @default(true)
   systemDataView   Boolean? @default(true)
-  resetComment     Boolean? @default(true)
   gpsView          Boolean? @default(true)
   callsView        Boolean? @default(true)
+  
   stopOnInactive   Boolean? @default(true)
   screenshot       Boolean? @default(true)
   activity         Boolean? @default(true)
@@ -181,6 +196,7 @@ model WorkerSettings {
   forceAwake       Boolean? @default(true)
   awakeEvery       Int? @default(15)
   gpsTime          Boolean? @default(true)
+
   menuConexion     Boolean? @default(true)
   menuPanel        Boolean? @default(true)
   menuGraficos     Boolean? @default(true)
@@ -191,6 +207,8 @@ model WorkerSettings {
   menuOficina      Boolean? @default(true)
   menuInformes     Boolean? @default(true)
   menuPartner      Boolean? @default(true)
+
+  resetComment     Boolean? @default(true)
 
   user User @relation(fields: [userId], references: [userId])
 }
