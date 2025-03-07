@@ -102,8 +102,8 @@ model Records {
   seconds  Int
 
   position    RecordPosition
-  day     String
-  time    String
+  day     String @db.VarChar(12)
+  time    String @db.VarChar(12)
   visible Boolean
   type    RecordType
 
@@ -142,9 +142,9 @@ model RecordsPrograms {
 model RecordsMobile {
   recordId    Int     @id @unique
   record      Records @relation(fields: [recordId], references: [recordId])
-  geoPosition String
-  video       String?
-  foto        String?
+  geoPosition String  @db.VarChar(20)
+  video       String? @db.VarChar(50)
+  foto        String? @db.VarChar(50)
 }
 
 enum Role {

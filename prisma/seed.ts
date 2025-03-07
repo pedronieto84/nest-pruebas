@@ -318,6 +318,8 @@ async function main() {
 
                         arrayProgramsToInsert.push(programsToInsert);
 
+                        let initialSeconds = 60
+
                         for (let index = 0; index < 10; index++) {
 
                             const programsArray = getPrograms(3)
@@ -325,12 +327,13 @@ async function main() {
                             const objectRecordsPrograms = {
 
                                 recordId: indexOfTotalRecords,
-                                time: moment(startDate).add(60, 'seconds').toDate(),
+                                time: moment(startDate).add(initialSeconds, 'seconds').toDate(),
                                 title: programsArray[(Math.round(Math.random() * (programsArray.length -1 )   ))],
                                 keyboard: Math.round(Math.random()*3),
                                 mouseMove: Math.round(Math.random()*20),
                                 mouseClicks: Math.round(Math.random()*2)
                             }
+                            initialSeconds += 60
                             arrayRecordsPrograms.push(objectRecordsPrograms)
                         }
 
