@@ -151,46 +151,46 @@ model RecordsMobile {
 
 model WorkerSettings {
   userId           Int      @id @unique
-  wakeUp           Boolean?
-  stopLockScreen   Boolean?
-  stopOnSuspend    Boolean?
-  stopOnLockScreen Boolean?
-  hidden           Boolean?
-  processes        Boolean?
-  systemData       Boolean?
-  ipLocation       Boolean?
-  internetSpeed    Boolean?
-  alwaysAwake      Boolean?
-  conexion         Boolean?
-  shutdown         Boolean?
-  screenshotView   Boolean?
-  activityView     Boolean?
-  processesView    Boolean?
-  systemDataView   Boolean?
-  resetComment     Boolean?
-  gpsView          Boolean?
-  callsView        Boolean?
-  stopOnInactive   Boolean?
-  screenshot       Boolean?
-  activity         Boolean?
-  calls            Boolean?
-  gps              Boolean?
-  recordsPhone     Int?
-  gpsPrecision     Int?
-  recWithoutMov    Boolean?
-  forceAwake       Boolean?
-  awakeEvery       Int?
-  gpsTime          Int?
-  menuConexion     Boolean?
-  menuPanel        Boolean?
-  menuGraficos     Boolean?
-  menuHorarios     Boolean?
-  menuSemanal      Boolean?
-  menuEquipo       Boolean?
-  menuProyectos    Boolean?
-  menuOficina      Boolean?
-  menuInformes     Boolean?
-  menuPartner      Boolean?
+  wakeUp           Boolean? @default(false)
+  stopLockScreen   Boolean? @default(true)
+  stopOnSuspend    Boolean? @default(true)
+  stopOnLockScreen Boolean? @default(true)
+  hidden           Boolean? @default(false)
+  processes        Boolean? @default(true)
+  systemData       Boolean? @default(true)
+  ipLocation       Boolean? @default(true)
+  internetSpeed    Boolean? @default(true)
+  alwaysAwake      Boolean? @default(true)
+  conexion         Boolean? @default(true)
+  shutdown         Boolean? @default(true)
+  screenshotView   Boolean? @default(true)
+  activityView     Boolean? @default(true)
+  processesView    Boolean? @default(true)
+  systemDataView   Boolean? @default(true)
+  resetComment     Boolean? @default(true)
+  gpsView          Boolean? @default(true)
+  callsView        Boolean? @default(true)
+  stopOnInactive   Boolean? @default(true)
+  screenshot       Boolean? @default(true)
+  activity         Boolean? @default(true)
+  calls            Boolean? @default(true)
+  gps              Boolean? @default(true)
+  recordsPhone     Int? @default(3)
+  gpsPrecision     Int? @default(2)
+  recWithoutMov    Boolean? @default(true)
+  forceAwake       Boolean? @default(true)
+  awakeEvery       Int? @default(15)
+  gpsTime          Boolean? @default(true)
+  menuConexion     Boolean? @default(true)
+  menuPanel        Boolean? @default(true)
+  menuGraficos     Boolean? @default(true)
+  menuHorarios     Boolean? @default(true)
+  menuSemanal      Boolean? @default(true)
+  menuEquipo       Boolean? @default(true)
+  menuProyectos    Boolean? @default(true)
+  menuOficina      Boolean? @default(true)
+  menuInformes     Boolean? @default(true)
+  menuPartner      Boolean? @default(true)
 
   user User @relation(fields: [userId], references: [userId])
 }
