@@ -1,12 +1,11 @@
-import { PrismaClient, Role, ProjectRole, Relation, RecordPosition, RecordType } from "@prisma/client";
-import { getCompanies, getDepartments, getNames, getSurnames, getProjects, getPrograms } from "./data";
+import { PrismaClient, ProjectRole, RecordPosition, RecordsPrograms, RecordType, Relation, Role } from "@prisma/client";
+import axios, { AxiosResponse } from 'axios'; // Import axios
+import * as moment from 'moment';
+import * as path from 'path';
 import { createFirebaseUser } from './../src/firebase/firebaseAuth';
 import { uploadFile } from './../src/firebase/firebaseStorage'; // Import the uploadFile function
+import { getCompanies, getDepartments, getNames, getPrograms, getProjects, getSurnames } from "./data";
 import { generateRandomDates, getRandomNumber, shiftArrayGenerator } from "./helpers.seed";
-import * as moment from 'moment';
-import * as fs from 'fs';
-import * as path from 'path';
-import axios from 'axios'; // Import axios
 
 const prisma = new PrismaClient();
 
@@ -23,7 +22,6 @@ const configObject = {
     storageVideos: 1
 }
 
-const roles: Role[] = [Role.ADMIN, Role.WORKER, Role.OWNER]; // Ensure roles match the Enum values
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
 
 async function uploadImagesAndGetUrls(imagePaths: string[]): Promise<string[]> {
@@ -44,7 +42,7 @@ async function uploadImagesAndGetUrls(imagePaths: string[]): Promise<string[]> {
 async function main() {
     // Call the deleteUsers function on the local emulator
 
-    const arrayOfDeletes = [
+    const arrayOfDeletes: Promise<AxiosResponse>[] = [
         axios.post('http://localhost:5001/worktocloud3/us-central1/deleteAllUsers'),
         axios.post('http://localhost:5001/worktocloud3/us-central1/deleteAllFirestoreData'),
         axios.post('http://localhost:5001/worktocloud3/us-central1/deleteAllStorageData')
@@ -96,7 +94,7 @@ async function main() {
         console.error('Error uploading images', error);
     }
 
-    uploadImagesAndGetUrls(videoPaths).then((videoUrls) => { console.log('video uploaded'); }).catch((error) => { console.error('Error uploading video', error); });
+    uploadImagesAndGetUrls(videoPaths).then(() => { console.log('video uploaded'); }).catch((error) => { console.error('Error uploading video', error); });
 
 
     await prisma.company.createMany({

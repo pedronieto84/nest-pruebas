@@ -96,8 +96,8 @@ export interface RecordsDesktop {
 }
 
 export interface RecordsPrograms {
-    recordProgrId: number;
-    recordId: number;
+    recordProgrId?: number;
+    recordId?: number;
     time: Date;
     title: string;
     keyboard?: number;
