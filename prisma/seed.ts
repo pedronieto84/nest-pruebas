@@ -226,7 +226,7 @@ async function main() {
     }
 
     // Add a user with email "admin@company" and role "ADMIN" and no compId or projId or deptId
-    const adminFirebase = await createFirebaseUser(`pedro@admin.com`);
+    const adminFirebase = await createFirebaseUser(`pedro@admin.com`, configObject.defaultPassword);
     await prisma.user.create({
         data: {
             firebaseId: adminFirebase.uid,
