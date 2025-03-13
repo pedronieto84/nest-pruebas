@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -20,6 +23,10 @@ import { AuthModule } from './endpoints/auth/auth.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    JwtModule.register({
+      secret: 'elColapsoDeOccidente', // Replace with your secret key
+      signOptions: { expiresIn: '1h' },
+    }),
     DepartmentsModule,
     UsersModule,
     ProjectsModule,
@@ -28,6 +35,12 @@ import { AuthModule } from './endpoints/auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    AppService,
+  ],
 })
 export class AppModule {}

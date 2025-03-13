@@ -6,6 +6,8 @@ import { FirebaseAuthMiddleware } from './firebase-auth.middleware';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Reflector } from '@nestjs/core';
 
 @Module({
     imports: [
@@ -14,7 +16,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
         signOptions: { expiresIn: '1h' },
     }),],
     controllers: [AuthController],
-    providers: [AuthService, FirebaseAuthService, JwtService, UsersService, PrismaService],
+    providers: [AuthService, FirebaseAuthService, JwtService, UsersService, PrismaService, JwtAuthGuard, Reflector],
     exports: [FirebaseAuthService],
 })
 export class AuthModule {
