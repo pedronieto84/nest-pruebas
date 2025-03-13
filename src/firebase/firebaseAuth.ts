@@ -11,7 +11,7 @@ try {
     console.error("Error connecting to Firebase Auth emulator:", error);
 }
 
-async function createFirebaseUser(email: string, password: string = "123456") {
+async function createFirebaseUser(email: string, password:string) {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         return userCredential.user;

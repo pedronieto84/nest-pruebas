@@ -94,5 +94,8 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+  },
+  "volta": {
+    "node": "22.14.0"
   }
 }

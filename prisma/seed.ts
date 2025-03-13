@@ -19,7 +19,8 @@ const configObject = {
     maximumShifts: 4,
     storageFaces: 3,
     storageScreenshots: 5,
-    storageVideos: 1
+    storageVideos: 1,
+    defaultPassword: "123456"
 }
 
 const projectRoles: ProjectRole[] = [ProjectRole.BOSS, ProjectRole.WORKER]; // Ensure roles match the Enum values
@@ -153,7 +154,7 @@ async function main() {
         const usersData = await Promise.all(
             getNames(configObject.workers).map(async (name, index) => {
                 try {
-                    const firebaseUser = await createFirebaseUser(`${name.toLowerCase()}-${index}@${comp.name}.com`);
+                    const firebaseUser = await createFirebaseUser(`${name.toLowerCase()}-${index}@${comp.name}.com`, configObject.defaultPassword);
                     return {
                         firebaseId: firebaseUser.uid,
                         name: `${name} ${getSurnames(configObject.workers)[index]}`,
