@@ -3,10 +3,18 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { FirebaseAuthService } from './firebase-auth.service';
 import { FirebaseAuthMiddleware } from './firebase-auth.middleware';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
+    imports: [
+        JwtModule.register({
+        secret: 'elColapsoDeOccidente', // Replace with your secret key
+        signOptions: { expiresIn: '1h' },
+    }),],
     controllers: [AuthController],
-    providers: [AuthService, FirebaseAuthService],
+    providers: [AuthService, FirebaseAuthService, JwtService, UsersService, PrismaService],
     exports: [FirebaseAuthService],
 })
 export class AuthModule {

@@ -139,6 +139,12 @@ export class UsersService {
     throw new HttpException("User does not exist", HttpStatus.NOT_FOUND);
   }
 
+  async findOneByEmail(email: string): Promise<any> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     // Primero cargamos el usuario previo, para ver si existe
     const user = await this.prisma.user.findUnique({
