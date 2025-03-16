@@ -1,38 +1,34 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SigninDto } from './dto/signin.dto';
-import { LoginDto } from './dto/login.dto';
-import { JwtService } from '@nestjs/jwt';
-import { Public } from '../../common/decorators/public.decorator';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { UpdateAuthDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService,
-        private readonly jwtService: JwtService) { }
+  constructor(private readonly authService: AuthService) { }
 
-    @Post('login')
-    async login(@Body() loginDto: LoginDto) {
-        return this.authService.login(loginDto);
-    }
+  @Post()
+  create(@Body() createAuthDto: CreateAuthDto) {
+    return this.authService.create(createAuthDto);
+  }
 
-    @Post('logout')
-    async logout() {
-        return this.authService.logout();
-    }
+  @Get()
+  findAll() {
+    return this.authService.findAll();
+  }
 
-    @Public()
-    @Post('signin')
-    async signIn(@Body() signInDto: SigninDto) {
-        console.log('here');
-        const user = await this.authService.signin(signInDto);
-        if (!user) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.authService.findOne(+id);
+  }
 
-        // Generate a JWT token
-        const payload = { email: user.email, sub: user.userId };
-        const token = this.jwtService.sign(payload);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
+    return this.authService.update(+id, updateAuthDto);
+  }
 
-        return { token };
-    }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.authService.remove(+id);
+  }
 }

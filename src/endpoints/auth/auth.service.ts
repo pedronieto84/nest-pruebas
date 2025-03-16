@@ -1,49 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { SigninDto } from './dto/signin.dto';
-import { LoginDto } from './dto/login.dto';
-import { createFirebaseUser } from '../../firebase/firebaseAuth'
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { UpdateAuthDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly usersService: UsersService,
-        private readonly jwtService: JwtService
-    ) { }
+  create(createAuthDto: CreateAuthDto) {
+    return 'This action adds a new auth';
+  }
 
-    async login(loginDto: LoginDto): Promise<any> {
-        const { email, password } = loginDto;
-        try {
+  findAll() {
+    return `This action returns all auth`;
+  }
 
-            return { message: 'Login successful' };
-        } catch (error) {
-            throw new Error('Login failed');
-        }
-    }
+  findOne(id: number) {
+    return `This action returns a #${id} auth`;
+  }
 
-    async logout(): Promise<void> {
-        // Invalidate user session or JWT token
+  update(id: number, updateAuthDto: UpdateAuthDto) {
+    return `This action updates a #${id} auth`;
+  }
 
-        // Firebase handles token invalidation automatically
-    }
-
-    async signin(signinDto: SigninDto): Promise<any> {
-        const { name, password, email } = signinDto;
-        try {
-            const userRecord = await createFirebaseUser(email, password);
-            return { message: 'Signin successful', userId: userRecord.uid };
-        } catch (error) {
-            throw new Error('Signin failed');
-        }
-    }
-
-    async validateUser(email: string, password: string): Promise<any> {
-        const user = await this.usersService.findOneByEmail(email);
-        if (user && user.password === password) {
-            const { password, ...result } = user;
-            return result;
-        }
-        return null;
-    }
+  remove(id: number) {
+    return `This action removes a #${id} auth`;
+  }
 }

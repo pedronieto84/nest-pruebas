@@ -1,10 +1,12 @@
 import { IsEmail, IsString, Length } from 'class-validator';
 
-export class LoginDto {
+export class LoginAuthDto {
     @IsEmail()
     email: string;
 
     @IsString()
-    @Length(4, 10)
+    @Length(4, 20)
     password: string;
+
+ 
 }
