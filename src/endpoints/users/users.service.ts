@@ -126,6 +126,10 @@ export class UsersService {
         },
       });
 
+      await prisma.workerSettings.create({
+        data: { userId: user.userId },
+      })
+
       return { userId: user.userId, email: user.email, name: user.name };
     });
   }
