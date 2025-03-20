@@ -10,6 +10,7 @@ import { UsersModule } from './endpoints/users/users.module';
 import { ProjectsModule } from './endpoints/projects/projects.module';
 import { CompaniesModule } from './endpoints/companies/companies.module';
 import { RecordsModule } from './endpoints/records/records.module';
+import { AuthModule } from './endpoints/auth/auth.module';
 
 
 @Module({
@@ -27,6 +28,7 @@ import { RecordsModule } from './endpoints/records/records.module';
     ProjectsModule,
     CompaniesModule,
     RecordsModule,
+    AuthModule,
     
   ],
   controllers: [AppController],
