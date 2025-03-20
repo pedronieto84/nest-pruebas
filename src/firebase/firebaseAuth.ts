@@ -27,11 +27,16 @@ function signInWithEmailAndPasswordMethod( email, password){
 }
 
 function verifyFirebaseToken(firebaseToken: string) {
-    const decodedUser = firebaseAdmin.auth().verifyIdToken(firebaseToken);
-    
-    // Generate a custom JWT with additional user roles
-    //const payload = { uid: decodedUser.uid, email: decodedUser.email, role: 'user' };
-    return { decodedUser};
+    try{
+        const decodedUser = firebaseAdmin.auth().verifyIdToken(firebaseToken);
+        
+        // Generate a custom JWT with additional user roles
+        //const payload = { uid: decodedUser.uid, email: decodedUser.email, role: 'user' };
+        return { decodedUser};
+
+    }catch(error){
+        throw error;
+    }
   }
 
 export { auth, createFirebaseUser, deleteUser, signInWithEmailAndPasswordMethod, verifyFirebaseToken };
