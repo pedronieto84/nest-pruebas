@@ -14,7 +14,7 @@ export class RecordsController {
 
   @Get(':userId/:day')
   findAll(@Param('userId') userId: string, @Param('day') day: string) {
-    console.log(userId, day);
+   
     return this.recordsService.findAll({ userId: +userId, day });
   }
 

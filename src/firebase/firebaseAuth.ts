@@ -34,7 +34,7 @@ function signInWithEmailAndPasswordMethod( email, password){
 async function verifyFirebaseToken(firebaseToken: string) {
     try{
              // Check if the Firebase Auth Emulator is being used
-             console.log(process.env);
+             
              if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
                 // Decode the token without verification (for emulator use only)
                 const decodedUser = JSON.parse(
@@ -45,6 +45,7 @@ async function verifyFirebaseToken(firebaseToken: string) {
     
             // For production, verify the token using the Admin SDK
             const decodedUser = await adminApp.auth().verifyIdToken(firebaseToken);
+            return  decodedUser ;
 
     }catch(error){
         throw error;

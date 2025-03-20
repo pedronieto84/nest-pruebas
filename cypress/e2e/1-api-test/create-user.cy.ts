@@ -44,8 +44,7 @@ describe('Create User API Test', () => {
             }
         }).then((response) => {
             // Assert that the response status is 201
-            console.log('response', response)
-            console.log(token);;
+         
             expect(response.status).to.eq(201);
 
             // Assert that the response body matches the user object

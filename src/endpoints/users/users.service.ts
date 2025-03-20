@@ -24,7 +24,6 @@ export class UsersService {
     try {
       firebaseUser = await createFirebaseUser(createUserDto.email, createUserDto.password);
     } catch (error) {
-      console.log(error.code);
       throw new HttpException(`Error creating Authenticated user (${error.code})`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -91,7 +90,6 @@ export class UsersService {
     try {
       firebaseUser = await createFirebaseUser(createUserDto.email, createUserDto.password);
     } catch (error) {
-      console.log(error.code);
       throw new HttpException(`Error creating Authenticated user (${error.code})`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
