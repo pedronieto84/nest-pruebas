@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsEnum, IsOptional, ValidateIf, MaxLength, MinLength, Length, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional, ValidateIf, Min, Max, IsInt, Length, IsNotEmpty, IsNumber } from 'class-validator';
 import { Role } from '@prisma/client';
 
 export class CreateUserDto {
@@ -6,9 +6,7 @@ export class CreateUserDto {
     email: string;
 
     @IsString()
-    @IsNotEmpty()
-    @MaxLength(30)
-    @MinLength(4)
+    @Length(4, 20)
     name: string;
 
     @IsString()
@@ -17,23 +15,31 @@ export class CreateUserDto {
 
 
     @IsEnum(Role)
-    role: Role;
+    role: Role = Role.WORKER;
 
     @IsOptional()
     @IsString()
-    @MaxLength(30)
-    @MinLength(17)
+    @Length(17, 30)
     firebaseId?: string;
 
     @ValidateIf(o => o.role === Role.WORKER)
-    @IsString()
+    @IsInt() // Asegura que sea un número entero
+    @Min(1) // No puede ser negativo
+    @Max(200000) 
     compId: number;
 
+    
     @ValidateIf(o => o.role === Role.WORKER)
-    @IsString()
-    deptId: number;
+    @IsOptional()
+    @IsInt() // Asegura que sea un número entero
+    @Min(1) // No puede ser negativo
+    @Max(200000) 
+    deptId?: number;
 
     @ValidateIf(o => o.role === Role.WORKER)
-    @IsString()
-    projId: number;
+    @IsOptional()
+    @IsInt() // Asegura que sea un número entero
+    @Min(1) // No puede ser negativo
+    @Max(200000) 
+    projId?: number;
 }
