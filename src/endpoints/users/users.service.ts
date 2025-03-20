@@ -60,6 +60,10 @@ export class UsersService {
         data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.VIEW },
       });
 
+      await prisma.workerSettings.create({
+        data: { userId: user.userId },
+      })
+
       return { userId: user.userId, email: user.email, name: user.name };
     });
   }
