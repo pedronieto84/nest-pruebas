@@ -38,6 +38,9 @@ importers:
       '@prisma/client':
         specifier: 6.4.0
         version: 6.4.0(prisma@6.4.0(typescript@5.7.3))(typescript@5.7.3)
+      '@types/cypress':
+        specifier: ^1.1.6
+        version: 1.1.6
       axios:
         specifier: ^1.8.1
         version: 1.8.1
@@ -1126,6 +1129,10 @@ packages:
 
   '@types/cookiejar@2.1.5':
     resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
+
+  '@types/cypress@1.1.6':
+    resolution: {integrity: sha512-CfeLLD3+6vIWe2AO5hR63f1c8EbRzrp/j1ExubAwOTpwZFZvF3Nm9cOPQiUwzNmAUmZuhO0QVH98Qlujni6nPw==}
+    deprecated: This is a stub types definition. cypress provides its own type definitions, so you do not need this installed.
 
   '@types/eslint-scope@3.7.7':
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
@@ -5469,6 +5476,10 @@ snapshots:
       '@types/node': 20.17.19
 
   '@types/cookiejar@2.1.5': {}
+
+  '@types/cypress@1.1.6':
+    dependencies:
+      cypress: 14.2.0
 
   '@types/eslint-scope@3.7.7':
     dependencies:
