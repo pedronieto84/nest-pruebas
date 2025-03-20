@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FirebaseAuthGuard } from '../../guards/firebase-auth.guard';
+
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
@@ -10,6 +11,7 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
+    // Ensure FirebaseAuthGuard is correctly implemented and Firebase Admin SDK is initialized
     if (createUserDto.role === 'OWNER') {
       return this.usersService.createOwner(createUserDto);
     } else {

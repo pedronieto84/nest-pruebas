@@ -5,6 +5,10 @@ import { firebaseConfig } from "./firebaseConfig"; // Ensure you have the correc
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+// No es lo mismo el firebase admin, que el app normal / el otro es para cliente, este para servidor
+firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.applicationDefault()
+});
 
 try {
     connectAuthEmulator(auth, "http://localhost:9099"); // Ensure the port matches the emulator configuration

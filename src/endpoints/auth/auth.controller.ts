@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { FirebaseAuthGuard } from 'src/guards/firebase-auth.guard';
 
 @Controller('auth')
@@ -9,7 +8,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('login')
-  lotin(@Body() createAuthDto: LoginDto) {
+  @HttpCode(200) // Explicitly set the status code for a successful login
+  login(@Body() createAuthDto: LoginDto) {
     return this.authService.login(createAuthDto);
   }
 
