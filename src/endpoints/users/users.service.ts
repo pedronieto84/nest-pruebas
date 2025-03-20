@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 import { Role, Prisma, ProjectRole, Relation } from '@prisma/client'; // Import Prisma
 
-import { createFirebaseUser } from '../../firebase/firebaseAuth'; // Import Firebase auth
+import { createFirebaseUser, deleteUser } from '../../firebase/firebaseAuth'; // Import Firebase auth
 
 @Injectable()
 export class UsersService {
@@ -24,7 +24,8 @@ export class UsersService {
     try {
       firebaseUser = await createFirebaseUser(createUserDto.email, createUserDto.password);
     } catch (error) {
-      throw new HttpException('Error creating Authenticated user', HttpStatus.INTERNAL_SERVER_ERROR);
+      console.log(error.code);
+      throw new HttpException(`Error creating Authenticated user (${error.code})`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     const firebaseId = firebaseUser.uid; // Firebase auth
@@ -47,25 +48,34 @@ export class UsersService {
       compId: compId
     };
 
-    return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
-      const user = await prisma.user.create({
-        data: userToCreate,
+    try {
+
+      const res =  await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
+        const user = await prisma.user.create({
+          data: userToCreate,
+        });
+  
+        await prisma.user_Projects.create({
+          data: { projId, userId: user.userId, role: ProjectRole.WORKER },
+        });
+  
+        await prisma.user_Relations.create({
+          data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.VIEW },
+        });
+  
+        await prisma.workerSettings.create({
+          data: { userId: user.userId },
+        })
+  
+        return { userId: user.userId, email: user.email, name: user.name };
       });
+      return res
+    } catch (error) {
+      // DEBO ELIMINAR EL FIREBASE USER
+      await deleteUser(firebaseUser);
+      throw new HttpException('Error creating user', HttpStatus.INTERNAL_SERVER_ERROR)
 
-      await prisma.user_Projects.create({
-        data: { projId, userId: user.userId, role: ProjectRole.WORKER },
-      });
-
-      await prisma.user_Relations.create({
-        data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.VIEW },
-      });
-
-      await prisma.workerSettings.create({
-        data: { userId: user.userId },
-      })
-
-      return { userId: user.userId, email: user.email, name: user.name };
-    });
+    }
   }
 
   async createOwner(createUserDto: CreateUserDto) {
@@ -81,57 +91,68 @@ export class UsersService {
     try {
       firebaseUser = await createFirebaseUser(createUserDto.email, createUserDto.password);
     } catch (error) {
-      throw new HttpException('Error creating Authenticated user', HttpStatus.INTERNAL_SERVER_ERROR);
+      console.log(error.code);
+      throw new HttpException(`Error creating Authenticated user (${error.code})`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    return await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
-      const user = await prisma.user.create({
-        data: {
-          email: createUserDto.email,
-          name: createUserDto.name,
-          role: Role.OWNER,
-          firebaseId: firebaseUser.uid // Firebase auth
-        },
+
+    try {
+      
+      const res =  await this.prisma.$transaction(async (prisma: Prisma.TransactionClient) => {
+        const user = await prisma.user.create({
+          data: {
+            email: createUserDto.email,
+            name: createUserDto.name,
+            role: Role.OWNER,
+            firebaseId: firebaseUser.uid // Firebase auth
+          },
+        });
+  
+        const company = await prisma.company.create({
+          data: { name: createUserDto.name },
+        });
+  
+        const department = await prisma.department.create({
+          data: { name: createUserDto.name, compId: company.compId },
+        });
+  
+        await prisma.department_Manager.create({
+          data: { userId: user.userId, deptId: department.deptId },
+        });
+  
+        const project = await prisma.project.create({
+          data: { name: createUserDto.name, compId: company.compId },
+        });
+  
+        await prisma.user_Projects.create({
+          data: { projId: project.projId, userId: user.userId, role: ProjectRole.BOSS },
+        });
+  
+        await prisma.user_Relations.create({
+          data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.EDIT },
+        });
+  
+        await prisma.user.update({
+          where: { userId: user.userId },
+          data: {
+            compId: company.compId,
+            deptId: department.deptId,
+          },
+        });
+  
+        await prisma.workerSettings.create({
+          data: { userId: user.userId },
+        })
+  
+        return { userId: user.userId, email: user.email, name: user.name };
       });
-
-      const company = await prisma.company.create({
-        data: { name: createUserDto.name },
-      });
-
-      const department = await prisma.department.create({
-        data: { name: createUserDto.name, compId: company.compId },
-      });
-
-      await prisma.department_Manager.create({
-        data: { userId: user.userId, deptId: department.deptId },
-      });
-
-      const project = await prisma.project.create({
-        data: { name: createUserDto.name, compId: company.compId },
-      });
-
-      await prisma.user_Projects.create({
-        data: { projId: project.projId, userId: user.userId, role: ProjectRole.BOSS },
-      });
-
-      await prisma.user_Relations.create({
-        data: { bossId: user.userId, subordinatedId: user.userId, relation: Relation.EDIT },
-      });
-
-      await prisma.user.update({
-        where: { userId: user.userId },
-        data: {
-          compId: company.compId,
-          deptId: department.deptId,
-        },
-      });
-
-      await prisma.workerSettings.create({
-        data: { userId: user.userId },
-      })
-
-      return { userId: user.userId, email: user.email, name: user.name };
-    });
+      return res
+    } catch (error) {
+      // DEBO ELIMINAR EL FIREBASE USER
+      await deleteUser(firebaseUser);
+      throw new HttpException('Error creating user', HttpStatus.INTERNAL_SERVER_ERROR)
+      
+    }
   }
 
   async findAll() {
