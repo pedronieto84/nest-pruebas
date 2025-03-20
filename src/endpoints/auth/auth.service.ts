@@ -1,11 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { Injectable,  HttpException, HttpStatus } from '@nestjs/common';
+import { LoginDto } from './dto/login';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { signInWithEmailAndPasswordMethod } from 'src/firebase/firebaseAuth';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  async login(loginDto: LoginDto) {
+
+    try{
+      const loggedIn = await signInWithEmailAndPasswordMethod(loginDto.email, loginDto.password);
+
+      // Extract the JWT (idToken) from the response
+      const idToken = await loggedIn.user.getIdToken();
+
+
+      if (!idToken) {
+        throw new HttpException('Failed to retrieve JWT', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      return {  token: idToken };
+    }catch(error){
+      throw new HttpException(`Error in login (${error.code})`, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+
   }
 
   findAll() {

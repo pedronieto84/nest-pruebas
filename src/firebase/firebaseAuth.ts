@@ -1,4 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword, connectAuthEmulator, deleteUser, signInWithEmailAndPassword } from 'firebase/auth';
+import * as firebaseAdmin from 'firebase-admin'
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "./firebaseConfig"; // Ensure you have the correct Firebase config
 
@@ -21,4 +22,16 @@ async function createFirebaseUser(email: string, password:string) {
     }
 }
 
-export { auth, createFirebaseUser, deleteUser, signInWithEmailAndPassword };
+function signInWithEmailAndPasswordMethod( email, password){
+    return signInWithEmailAndPassword(auth, email, password)
+}
+
+function verifyFirebaseToken(firebaseToken: string) {
+    const decodedUser = firebaseAdmin.auth().verifyIdToken(firebaseToken);
+    
+    // Generate a custom JWT with additional user roles
+    //const payload = { uid: decodedUser.uid, email: decodedUser.email, role: 'user' };
+    return { decodedUser};
+  }
+
+export { auth, createFirebaseUser, deleteUser, signInWithEmailAndPasswordMethod, verifyFirebaseToken };
