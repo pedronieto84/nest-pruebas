@@ -60,6 +60,7 @@ async function main() {
     await prisma.user_Relations.deleteMany({});
     await prisma.user_Projects.deleteMany({});
     await prisma.department_Manager.deleteMany({});
+    await prisma.workerSettings.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.project.deleteMany({});
     await prisma.department.deleteMany({});
@@ -67,6 +68,8 @@ async function main() {
     await prisma.recordsPrograms.deleteMany({});
     await prisma.recordsMobile.deleteMany({});
     await prisma.records.deleteMany({});
+    await prisma.recordsDesktop.deleteMany({});
+    await prisma.recordsSystem.deleteMany({});
 
     console.log('All DB DATA has been deleted successfully.');
 
@@ -174,6 +177,10 @@ async function main() {
             data: usersData,
         });
 
+
+
+
+
         // Asigno a cada trabajador un proyecto aleatorio
         const workersOfThisComp = await prisma.user.findMany({
             where: {
@@ -224,6 +231,22 @@ async function main() {
             }
         }
     }
+
+
+    // Creo el workerSettings
+    const totalUsers = await prisma.user.findMany({
+        select: {
+            userId: true, // Selecciona únicamente el campo userId
+        },
+    });
+
+
+
+    await prisma.workerSettings.createMany({
+        data: totalUsers.map((user) => ({
+            userId: user.userId
+        })),
+    });
 
     // Add a user with email "admin@company" and role "ADMIN" and no compId or projId or deptId
     const adminFirebase = await createFirebaseUser(`pedro@admin.com`, configObject.defaultPassword);
@@ -327,16 +350,16 @@ async function main() {
 
                                 recordId: indexOfTotalRecords,
                                 time: moment(startDate).add(initialSeconds, 'seconds').toDate(),
-                                title: programsArray[(Math.round(Math.random() * (programsArray.length -1 )   ))],
-                                keyboard: Math.round(Math.random()*3),
-                                mouseMove: Math.round(Math.random()*20),
-                                mouseClicks: Math.round(Math.random()*2)
+                                title: programsArray[(Math.round(Math.random() * (programsArray.length - 1)))],
+                                keyboard: Math.round(Math.random() * 3),
+                                mouseMove: Math.round(Math.random() * 20),
+                                mouseClicks: Math.round(Math.random() * 2)
                             }
                             initialSeconds += 60
                             arrayRecordsPrograms.push(objectRecordsPrograms)
                         }
 
-                       
+
                     }
 
                     if (typeShift === RecordType.MOBILE) {
